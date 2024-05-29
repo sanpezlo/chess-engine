@@ -3,14 +3,10 @@ use std::{
     ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not},
 };
 
-#[derive(Clone, Copy, Debug, Default)]
-pub struct BitBoard(u64);
+use crate::{File, Rank, Square};
 
-impl BitBoard {
-    pub fn new(bits: u64) -> Self {
-        Self(bits)
-    }
-}
+#[derive(Clone, Copy, Debug, Default)]
+pub struct BitBoard(pub u64);
 
 impl BitAnd for BitBoard {
     type Output = Self;
@@ -61,21 +57,33 @@ impl Not for BitBoard {
     }
 }
 
+impl PartialEq for BitBoard {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
+    }
+}
+
+impl From<Square> for BitBoard {
+    fn from(square: Square) -> Self {
+        Self(1u64 << square.0)
+    }
+}
+
 impl fmt::Display for BitBoard {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut s = String::from("\n");
 
-        const LAST_BIT: u64 = 63;
-        const LAST_RANK: u64 = 8;
+        for rank in (0..8u8).rev() {
+            let rank = Rank::new(rank);
+            s.push_str(&format!("  {} ", rank));
 
-        for rank in 0..8 {
-            s.push_str(&format!("  {} ", LAST_RANK - rank));
+            for file in 0..8u8 {
+                let file = File::new(file);
 
-            for file in (0..8).rev() {
-                if self.0 & (1u64 << (LAST_BIT - (rank * 8) - file)) != 0 {
-                    s.push_str(" X");
+                if BitBoard::from(Square::new(file, rank)).0 & self.0 != 0 {
+                    s.push_str("X ");
                 } else {
-                    s.push_str(" .");
+                    s.push_str(". ");
                 }
             }
 

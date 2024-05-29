@@ -1,7 +1,13 @@
-use chess_engine::BitBoard;
+use std::str::FromStr;
+
+use chess_engine::{BitBoard, Square};
 
 fn main() {
-    println!("{}", BitBoard::new(1u64));
-    println!("{}", BitBoard::new(1u64 << 7));
-    println!("{}", BitBoard::new(1u64 << 63));
+    let square = Square::from_str("a2").unwrap_or_else(|s| {
+        eprintln!("{}", s);
+        std::process::exit(1);
+    });
+
+    println!("Square: {}", square);
+    println!("{}", BitBoard(1u64 << square.0));
 }
