@@ -1,13 +1,19 @@
 use std::str::FromStr;
 
-use chess_engine::{BitBoard, Square};
+use chess_engine::{BitBoard, Board, CastleRights, Square};
 
 fn main() {
-    let square = Square::from_str("a2").unwrap_or_else(|s| {
-        eprintln!("{}", s);
-        std::process::exit(1);
-    });
+    let square = Square(55);
 
     println!("Square: {}", square);
-    println!("{}", BitBoard(1u64 << square.0));
+    println!("{}", BitBoard(18445336716005867520));
+
+    let board: Board = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"
+        .parse()
+        .map_err(|e| {
+            eprintln!("{}", e);
+        })
+        .unwrap();
+
+    println!("{:?}", board);
 }

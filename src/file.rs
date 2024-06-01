@@ -8,7 +8,7 @@ pub enum FileError {
     Invalid(String),
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum File {
     A,
     B,

@@ -4,23 +4,23 @@ use thiserror::Error;
 
 use crate::{File, FileError, Rank, RankError};
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub struct Square(pub u8);
-
 #[derive(Error, Debug)]
 pub enum SquareError {
     #[error("invalid length (expected 2, got {0})")]
     Length(usize),
-
-    #[error("uknown error")]
-    Unknown,
 
     #[error("{0}")]
     Rank(#[from] RankError),
 
     #[error("{0}")]
     File(#[from] FileError),
+
+    #[error("uknown error")]
+    Unknown,
 }
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct Square(pub u8);
 
 impl Square {
     pub fn new(file: File, rank: Rank) -> Self {

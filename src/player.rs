@@ -10,7 +10,7 @@ pub enum PlayerError {
 
 pub const PLAYERS: usize = 2;
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Player {
     White,
     Black,

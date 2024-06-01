@@ -8,7 +8,7 @@ pub enum RankError {
     Invalid(String),
 }
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Rank {
     One,
     Two,

@@ -36,6 +36,7 @@ pub enum PieceError {
     Invalid(String),
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Piece {
     piece_type: PieceType,
     player: Player,
@@ -44,6 +45,14 @@ pub struct Piece {
 impl Piece {
     pub fn new(piece_type: PieceType, player: Player) -> Self {
         Piece { piece_type, player }
+    }
+
+    pub fn piece_type(&self) -> PieceType {
+        self.piece_type
+    }
+
+    pub fn player(&self) -> Player {
+        self.player
     }
 }
 
