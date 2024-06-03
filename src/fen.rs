@@ -1,11 +1,10 @@
-use core::num;
-use std::{f32::consts::SQRT_2, str::FromStr};
+use std::str::FromStr;
 
 use thiserror::Error;
 
 use crate::{
-    piece, square, Board, CastleRights, CastleRightsError, Piece, PieceError, PieceType, Player,
-    PlayerError, Rank, Square, SquareError,
+    Board, CastleRightsError, Piece, PieceError, PieceType, Player, PlayerError, Rank, Square,
+    SquareError,
 };
 
 #[derive(Error, Debug)]

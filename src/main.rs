@@ -1,6 +1,4 @@
-use std::str::FromStr;
-
-use chess_engine::{BitBoard, Board, CastleRights, Square};
+use chess_engine::{BitBoard, Board, Square};
 
 fn main() {
     let square = Square(55);
