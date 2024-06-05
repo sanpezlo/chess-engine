@@ -59,6 +59,31 @@ impl Board {
         self.piece_types_bitboards[piece_type] |= square.into();
         self.player_bitboards[player] |= square.into();
     }
+
+    pub fn has_bishop_pair(&self, color: Color) -> bool {
+        let color = color as usize;
+
+        let mut bitboard =
+            self.piece_types_bitboards[PieceType::Bishop as usize] & self.player_bitboards[color];
+
+        let mut white_square = 0;
+        let mut black_square = 0;
+
+        if bitboard.0.count_ones() >= 2 {
+            while bitboard.0 != 0 {
+                let square = Square(bitboard.0.trailing_zeros() as u8);
+                if square.color() == Color::White {
+                    white_square += 1;
+                } else {
+                    black_square += 1;
+                }
+
+                bitboard = BitBoard(bitboard.0 ^ 1 << bitboard.0.trailing_zeros() as u64);
+            }
+        }
+
+        white_square >= 1 && black_square >= 1
+    }
 }
 
 impl Default for Board {
