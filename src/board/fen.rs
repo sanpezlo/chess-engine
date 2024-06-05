@@ -1,11 +1,9 @@
-use std::str::FromStr;
-
-use thiserror::Error;
-
+use super::{BoardBuilder, CastleRightsError};
 use crate::{
-    Board, CastleRightsError, Piece, PieceError, PieceType, Player, PlayerError, Rank, Square,
-    SquareError,
+    Color, File, Piece, PieceError, PieceType, Player, PlayerError, Rank, Square, SquareError,
 };
+use std::{fmt, str::FromStr};
+use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum FenError {
@@ -49,26 +47,22 @@ pub enum FenError {
     FullmoveCounter,
 }
 
-impl Board {}
-
-impl FromStr for Board {
+impl FromStr for BoardBuilder {
     type Err = FenError;
 
     /// Constructs a board from a Forsyth-Edwards Notation (FEN)
     fn from_str(fen: &str) -> Result<Self, Self::Err> {
-        let mut board = Board::default();
+        let mut board_builder = BoardBuilder::new();
 
         let fen = split_fen_string(fen)?;
 
         let pieces = piece_placement(fen[0])?;
 
-        for (square, piece) in pieces {
-            board.put_piece(square, piece);
-        }
+        board_builder.pieces(pieces);
 
-        board.set_player(fen[1].parse()?);
+        board_builder.player(fen[1].parse()?);
 
-        board.set_castling_rights(fen[2].parse()?);
+        board_builder.castling_rights(fen[2].parse()?);
 
         let en_passant_square = {
             if fen[3] == "-" {
@@ -85,10 +79,12 @@ impl FromStr for Board {
             }
         };
 
-        board.set_en_passant_square(en_passant_square);
+        board_builder.en_passant_square(en_passant_square);
+
+        let mut halfmove_clock = 0;
 
         if fen.len() > 4 {
-            let halfmove_clock: u8 = fen[4].parse().map_err(|_| FenError::HalfmoveClock)?;
+            halfmove_clock = fen[4].parse().map_err(|_| FenError::HalfmoveClock)?;
 
             // TODO: if is not a checkmate and halfmove_clock is 100, it is a draw
 
@@ -96,9 +92,9 @@ impl FromStr for Board {
                 return Err(FenError::HalfmoveClock);
             }
 
-            board.set_halfmove_clock(halfmove_clock);
+            board_builder.halfmove_clock(halfmove_clock);
         } else {
-            board.set_halfmove_clock(0);
+            board_builder.halfmove_clock(0);
         }
 
         if fen.len() > 5 {
@@ -108,16 +104,16 @@ impl FromStr for Board {
                 return Err(FenError::FullmoveCounter);
             }
 
-            if board.halfmove_clock() as u16 > fullmove_counter * 2 {
+            if halfmove_clock as u16 > fullmove_counter * 2 {
                 return Err(FenError::HalfmoveClock);
             }
 
-            board.set_fullmove_counter(fullmove_counter);
+            board_builder.fullmove_counter(fullmove_counter);
         } else {
-            board.set_fullmove_counter(1);
+            board_builder.fullmove_counter(1);
         }
 
-        Ok(board)
+        Ok(board_builder)
     }
 }
 
@@ -133,8 +129,8 @@ fn split_fen_string(fen: &str) -> Result<Vec<&str>, FenError> {
 }
 
 /// Parses the piece placement section of a FEN string
-fn piece_placement(piece_section: &str) -> Result<Vec<(Square, Piece)>, FenError> {
-    let mut pieces: Vec<(Square, Piece)> = Vec::new();
+fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; 64], FenError> {
+    let mut pieces = [None; 64];
 
     let ranks: Vec<&str> = piece_section.split('/').collect();
 
@@ -150,13 +146,13 @@ fn piece_placement(piece_section: &str) -> Result<Vec<(Square, Piece)>, FenError
 
         for file in rank.chars() {
             if let Some(digit) = file.to_digit(10) {
-                file_index += digit as u8;
+                file_index += digit as usize;
                 continue;
             }
 
             let piece: Piece = file.to_string().as_str().parse()?;
 
-            if piece.player() == Player::White {
+            if piece.player() == Player(Color::White) {
                 num_white_pieces += 1;
             } else {
                 num_black_pieces += 1;
@@ -167,49 +163,94 @@ fn piece_placement(piece_section: &str) -> Result<Vec<(Square, Piece)>, FenError
                     return Err(FenError::PawnOnFirstOrLastRank);
                 }
 
-                if piece.player() == Player::White {
+                if piece.player() == Player(Color::White) {
                     num_white_pawns += 1;
                 } else {
                     num_black_pawns += 1;
                 }
             }
 
-            pieces.push((Square((7 - rank_index as u8) * 8 + file_index), piece));
+            pieces[(7 - rank_index) * 8 + file_index] = Some(piece);
             file_index += 1;
         }
 
         if file_index != 8 {
-            return Err(FenError::Files(file_index as usize));
+            return Err(FenError::Files(file_index));
         }
     }
 
     if num_white_pieces > 16 {
         return Err(FenError::ToManyPieces {
-            player: Player::White,
+            player: Player(Color::White),
             num_pieces: num_white_pieces,
         });
     }
 
     if num_black_pieces > 16 {
         return Err(FenError::ToManyPieces {
-            player: Player::Black,
+            player: Player(Color::Black),
             num_pieces: num_black_pieces,
         });
     }
 
     if num_white_pawns > 8 {
         return Err(FenError::ToManyPawns {
-            player: Player::White,
+            player: Player(Color::White),
             num_pawns: num_white_pawns,
         });
     }
 
     if num_black_pawns > 8 {
         return Err(FenError::ToManyPawns {
-            player: Player::Black,
+            player: Player(Color::Black),
             num_pawns: num_black_pawns,
         });
     }
 
     Ok(pieces)
+}
+
+impl fmt::Display for BoardBuilder {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut s = String::new();
+
+        for rank in (0..8).rev() {
+            let mut empty = 0;
+
+            for file in 0..8 {
+                let square = Square::new(File::new(file), Rank::new(rank));
+
+                if let Some(piece) = self.pieces[square.0 as usize] {
+                    if empty > 0 {
+                        s.push_str(&empty.to_string());
+                        empty = 0;
+                    }
+
+                    s.push_str(&piece.to_string());
+                } else {
+                    empty += 1;
+                }
+            }
+
+            if empty > 0 {
+                s.push_str(&empty.to_string());
+            }
+
+            if rank > 0 {
+                s.push('/');
+            }
+        }
+
+        write!(
+            f,
+            "{} {} {} {} {} {}",
+            s,
+            self.player,
+            self.castling_rights,
+            self.en_passant_square
+                .map_or_else(|| "-".to_string(), |s| s.to_string()),
+            self.halfmove_clock,
+            self.fullmove_counter
+        )
+    }
 }

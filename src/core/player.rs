@@ -1,50 +1,41 @@
+use crate::{Color, ColorError};
 use std::{fmt, str::FromStr};
-
 use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum PlayerError {
     #[error("the player `{0}` is not valid")]
-    Invalid(String),
+    Invalid(#[from] ColorError),
 }
 
 pub const PLAYERS: usize = 2;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Player {
-    White,
-    Black,
-}
-
-impl Player {
-    pub fn new(player: u8) -> Self {
-        match player {
-            0 => Player::White,
-            1 => Player::Black,
-            _ => unreachable!(),
-        }
-    }
-}
+pub struct Player(pub Color);
 
 impl FromStr for Player {
     type Err = PlayerError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "w" => Ok(Player::White),
-            "b" => Ok(Player::Black),
-            _ => Err(PlayerError::Invalid(s.to_string())),
-        }
+        let color = Color::from_str(s)?;
+
+        Ok(Player(color))
     }
 }
 
 impl fmt::Display for Player {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = match self {
-            Player::White => "w",
-            Player::Black => "b",
+            Player(Color::White) => "w",
+            Player(Color::Black) => "b",
         };
 
         write!(f, "{}", s)
+    }
+}
+
+impl Default for Player {
+    fn default() -> Self {
+        Player(Color::White)
     }
 }

@@ -1,10 +1,8 @@
+use crate::Color;
 use std::{fmt, str::FromStr};
-
 use thiserror::Error;
 
-use crate::Player;
-
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum CastleRightsType {
     None,
     KingSide,
@@ -69,8 +67,8 @@ impl FromStr for CastleRights {
             return Err(CastleRightsError::Invalid(s.to_string()));
         }
 
-        castle_rights[Player::White as usize] = CastleRightsType::new(white);
-        castle_rights[Player::Black as usize] = CastleRightsType::new(black);
+        castle_rights[Color::White as usize] = CastleRightsType::new(white);
+        castle_rights[Color::Black as usize] = CastleRightsType::new(black);
 
         Ok(CastleRights(castle_rights))
     }
@@ -80,7 +78,7 @@ impl fmt::Display for CastleRights {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut s = String::new();
 
-        let white = self.0[Player::White as usize] as u8;
+        let white = self.0[Color::White as usize] as u8;
 
         if white & CastleRightsType::KingSide as u8 != 0 {
             s.push('K');
@@ -90,7 +88,7 @@ impl fmt::Display for CastleRights {
             s.push('Q');
         }
 
-        let black = self.0[Player::Black as usize] as u8;
+        let black = self.0[Color::Black as usize] as u8;
 
         if black & CastleRightsType::KingSide as u8 != 0 {
             s.push('k');

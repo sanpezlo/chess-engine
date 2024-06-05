@@ -1,9 +1,8 @@
+use crate::{File, Rank, Square};
 use std::{
     fmt,
     ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not},
 };
-
-use crate::{File, Rank, Square};
 
 #[derive(Clone, Copy, Debug, Default)]
 pub struct BitBoard(pub u64);

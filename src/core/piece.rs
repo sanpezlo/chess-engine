@@ -1,12 +1,10 @@
+use crate::{Color, Player};
 use std::{fmt, str::FromStr};
-
 use thiserror::Error;
-
-use crate::Player;
 
 pub const PIECE_TYPES: usize = 6;
 
-#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PieceType {
     Pawn,
     Knight,
@@ -63,18 +61,18 @@ impl FromStr for Piece {
         let mut chars = s.chars();
 
         let (piece_type, player) = match chars.next() {
-            Some('P') => (PieceType::Pawn, Player::White),
-            Some('N') => (PieceType::Knight, Player::White),
-            Some('B') => (PieceType::Bishop, Player::White),
-            Some('R') => (PieceType::Rook, Player::White),
-            Some('Q') => (PieceType::Queen, Player::White),
-            Some('K') => (PieceType::King, Player::White),
-            Some('p') => (PieceType::Pawn, Player::Black),
-            Some('n') => (PieceType::Knight, Player::Black),
-            Some('b') => (PieceType::Bishop, Player::Black),
-            Some('r') => (PieceType::Rook, Player::Black),
-            Some('q') => (PieceType::Queen, Player::Black),
-            Some('k') => (PieceType::King, Player::Black),
+            Some('P') => (PieceType::Pawn, Player(Color::White)),
+            Some('N') => (PieceType::Knight, Player(Color::White)),
+            Some('B') => (PieceType::Bishop, Player(Color::White)),
+            Some('R') => (PieceType::Rook, Player(Color::White)),
+            Some('Q') => (PieceType::Queen, Player(Color::White)),
+            Some('K') => (PieceType::King, Player(Color::White)),
+            Some('p') => (PieceType::Pawn, Player(Color::Black)),
+            Some('n') => (PieceType::Knight, Player(Color::Black)),
+            Some('b') => (PieceType::Bishop, Player(Color::Black)),
+            Some('r') => (PieceType::Rook, Player(Color::Black)),
+            Some('q') => (PieceType::Queen, Player(Color::Black)),
+            Some('k') => (PieceType::King, Player(Color::Black)),
             _ => return Err(PieceError::Invalid(s.to_string())),
         };
 
@@ -93,7 +91,7 @@ impl fmt::Display for Piece {
             PieceType::King => "k",
         };
 
-        if self.player == Player::White {
+        if self.player == Player(Color::White) {
             write!(f, "{}", piece_type.to_uppercase())
         } else {
             write!(f, "{}", piece_type)

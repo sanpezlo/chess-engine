@@ -1,8 +1,6 @@
+use crate::{Color, File, FileError, Rank, RankError};
 use std::{fmt, str::FromStr};
-
 use thiserror::Error;
-
-use crate::{File, FileError, Rank, RankError};
 
 #[derive(Error, Debug)]
 pub enum SquareError {
@@ -33,6 +31,22 @@ impl Square {
 
     pub fn rank(self) -> Rank {
         Rank::new(self.0 / 8)
+    }
+
+    pub fn color(self) -> Color {
+        if self.rank() as u8 % 2 == 0 {
+            if self.file() as u8 % 2 == 0 {
+                Color::Black
+            } else {
+                Color::White
+            }
+        } else {
+            if self.file() as u8 % 2 == 0 {
+                Color::White
+            } else {
+                Color::Black
+            }
+        }
     }
 }
 
