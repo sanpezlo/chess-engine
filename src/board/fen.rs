@@ -1,3 +1,24 @@
+//! Forsyth-Edwards Notation (FEN) parser and formatter
+//!
+//! [FEN](https://www.chessprogramming.org/Forsyth-Edwards_Notation) is a
+//! standard notation for describing a particular board position of a chess
+//! game. It is used to describe the initial position of a game, as well as any
+//! position during the game.
+//!
+//! # Errors
+//!
+//! Returns a [`FenError`] if the FEN string is invalid.
+//!
+//! # Examples
+//!
+//! ```
+//! # use chess_engine::BoardBuilder;
+//! let fen_str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+//! let board: BoardBuilder = fen_str.parse().unwrap();
+//!
+//! assert_eq!(board.to_string(), fen_str);
+//! ```
+
 use super::{BoardBuilder, CastleRightsError};
 use crate::{
     Color, File, Piece, PieceError, PieceType, Player, PlayerError, Rank, Square, SquareError,
@@ -5,52 +26,90 @@ use crate::{
 use std::{fmt, str::FromStr};
 use thiserror::Error;
 
+/// Errors that can occur when parsing a FEN string
 #[derive(Error, Debug)]
 pub enum FenError {
+    /// Invalid number of FEN sections
     #[error("invalid number of FEN sections (expected 4-6, got {0})")]
     Sections(usize),
 
+    /// Invalid number of ranks
     #[error("invalid number of ranks (expected 8, got {0})")]
     Ranks(usize),
 
+    /// Invalid number of files
     #[error("invalid number of files (expected 8, got {0})")]
     Files(usize),
 
+    /// Invalid piece
     #[error("{0}")]
     Piece(#[from] PieceError),
 
+    /// Pawns cannot be on the first or last rank
     #[error("pawns cannot be on the first or last rank")]
     PawnOnFirstOrLastRank,
 
+    /// Player has too many pawns
     #[error("player {player} has too many pawns (expected 8 or fewer, got {num_pawns})")]
-    ToManyPawns { player: Player, num_pawns: u8 },
+    ToManyPawns {
+        /// [`Player`] with too many pawns
+        player: Player,
+        /// Number of pawns
+        num_pawns: u8,
+    },
 
+    /// Player has too many pieces
     #[error("player {player} has too many pieces (expected 16 or fewer, got {num_pieces})")]
-    ToManyPieces { player: Player, num_pieces: u8 },
+    ToManyPieces {
+        /// [`Player`] with too many pieces
+        player: Player,
+        /// Number of pieces
+        num_pieces: u8,
+    },
 
+    /// Invalid player
     #[error("{0}")]
     Player(#[from] PlayerError),
 
+    /// Invalid castle rights
     #[error("{0}")]
     CastleRights(#[from] CastleRightsError),
 
+    /// Invalid square
     #[error("{0}")]
     EnPassantSquare(#[from] SquareError),
 
+    /// Invalid en passant rank
     #[error("invalid en passant rank (expected 3 or 6, got {0})")]
     EnPassantRank(Rank),
 
+    /// Invalid halfmove clock
     #[error("invalid halfmove clock")]
     HalfmoveClock,
 
+    /// Invalid fullmove counter
     #[error("invalid fullmove counter")]
     FullmoveCounter,
 }
 
+/// Parses a [`BoardBuilder`] from a [`FEN`] string
+///
+/// # Errors
+///
+/// Returns a [`FenError`] if the FEN string is invalid.
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::BoardBuilder;
+/// let fen_str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+/// let board: BoardBuilder = fen_str.parse().unwrap();
+/// ```
+///
+/// [`FEN`]: fen/index.html
 impl FromStr for BoardBuilder {
     type Err = FenError;
 
-    /// Constructs a board from a Forsyth-Edwards Notation (FEN)
     fn from_str(fen: &str) -> Result<Self, Self::Err> {
         let mut board_builder = BoardBuilder::new();
 
@@ -118,6 +177,9 @@ impl FromStr for BoardBuilder {
 }
 
 /// Splits a FEN string into its sections
+///
+/// Returns a vector of strings, where each string is a section of the FEN
+/// string.
 fn split_fen_string(fen: &str) -> Result<Vec<&str>, FenError> {
     let fen: Vec<&str> = fen.split_whitespace().collect();
 
@@ -129,6 +191,9 @@ fn split_fen_string(fen: &str) -> Result<Vec<&str>, FenError> {
 }
 
 /// Parses the piece placement section of a FEN string
+///
+/// Returns an array of pieces, where the index is the square index on the
+/// board and the value is the piece on that square.
 fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; 64], FenError> {
     let mut pieces = [None; 64];
 
@@ -210,6 +275,19 @@ fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; 64], FenError>
     Ok(pieces)
 }
 
+/// Formats a [`BoardBuilder`] as a [`FEN`] string
+///
+/// # Examples
+/// ```
+/// # use chess_engine::BoardBuilder;
+/// let board = BoardBuilder::new();
+/// assert_eq!(
+///    board.to_string(),
+///   "8/8/8/8/8/8/8/8 w - - 0 1"
+/// );
+/// ```
+///
+/// [`FEN`]: fen/index.html
 impl fmt::Display for BoardBuilder {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut s = String::new();

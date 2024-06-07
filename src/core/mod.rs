@@ -1,3 +1,5 @@
+//! Types for working with chessboards.
+
 mod bitboard;
 mod color;
 mod file;

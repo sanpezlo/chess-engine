@@ -1,25 +1,49 @@
 use std::{fmt, str::FromStr};
 use thiserror::Error;
 
+/// An error that can occur when parsing a [`File`].
 #[derive(Error, Debug)]
 pub enum FileError {
-    #[error("the file `{0}` is not valid")]
+    /// The file is not valid.
+    #[error("invalid file (expected a-h, got {0})")]
     Invalid(String),
 }
 
+/// A `File` on a chessboard.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum File {
+    /// The File A.
     A,
+    /// The File B.
     B,
+    /// The File C.
     C,
+    /// The File D.
     D,
+    /// The File E.
     E,
+    /// The File F.
     F,
+    /// The File G.
     G,
+    /// The File H.
     H,
 }
 
 impl File {
+    /// Creates a new `File` from a `u8`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the file is not 0-7.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::File;
+    /// let file = File::new(0);
+    /// assert_eq!(file, File::A);
+    /// ```
     pub fn new(file: u8) -> Self {
         match file {
             0 => File::A,
@@ -35,6 +59,19 @@ impl File {
     }
 }
 
+/// Parses a `File` from a string.
+///
+/// # Errors
+///
+/// Returns a [`FileError`] if the string is not a valid file.
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::File;
+/// let file: File = "a".parse().unwrap();
+/// assert_eq!(file, File::A);
+/// ```
 impl FromStr for File {
     type Err = FileError;
 
@@ -53,6 +90,15 @@ impl FromStr for File {
     }
 }
 
+/// Formats a `File` as a string.
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::File;
+/// let file = File::A;
+/// assert_eq!(file.to_string(), "a");
+/// ```
 impl fmt::Display for File {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = match self {

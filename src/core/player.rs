@@ -2,17 +2,44 @@ use crate::{Color, ColorError};
 use std::{fmt, str::FromStr};
 use thiserror::Error;
 
+/// Players in a chess game.
+pub const PLAYERS: usize = 2;
+
+/// An error that can occur when parsing a [`Player`].
 #[derive(Error, Debug)]
 pub enum PlayerError {
-    #[error("the player `{0}` is not valid")]
+    /// The color is not valid.
+    #[error("`{0}`")]
     Invalid(#[from] ColorError),
 }
 
-pub const PLAYERS: usize = 2;
-
+/// A `Player` in a chess game.
+///
+/// A `Player` is represented by a [`Color`].
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::{Player, Color};
+/// let player = Player::default();
+/// assert_eq!(player, Player(Color::White));
+/// ```
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Player(pub Color);
 
+/// Parses a `Player` from a string.
+///
+/// # Errors
+///
+/// Returns a [`PlayerError`] if the string is not a valid player.
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::Player;
+/// let player: Player = "w".parse().unwrap();
+/// assert_eq!(player, Player::default());
+/// ```
 impl FromStr for Player {
     type Err = PlayerError;
 
@@ -23,6 +50,15 @@ impl FromStr for Player {
     }
 }
 
+/// Formats a `Player` as a string.
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::Player;
+/// let player = Player::default();
+/// assert_eq!(player.to_string(), "w");
+/// ```
 impl fmt::Display for Player {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let s = match self {
@@ -34,6 +70,14 @@ impl fmt::Display for Player {
     }
 }
 
+/// The default `Player` is `Player(Color::White)`.
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::{Player, Color};
+/// assert_eq!(Player::default(), Player(Color::White));
+/// ```
 impl Default for Player {
     fn default() -> Self {
         Player(Color::White)

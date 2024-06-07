@@ -2,19 +2,40 @@ use crate::{Color, Player};
 use std::{fmt, str::FromStr};
 use thiserror::Error;
 
+/// The number of piece types in chess.
 pub const PIECE_TYPES: usize = 6;
 
+/// A `PieceType` in chess.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum PieceType {
+    /// A Pawn.
     Pawn,
+    /// A Knight.
     Knight,
+    /// A Bishop.
     Bishop,
+    /// A Rook.
     Rook,
+    /// A Queen.
     Queen,
+    /// A King.
     King,
 }
 
 impl PieceType {
+    /// Creates a new `PieceType` from a `u8`.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the piece type is not 0-5.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::PieceType;
+    /// let piece_type = PieceType::new(0);
+    /// assert_eq!(piece_type, PieceType::Pawn);
+    /// ```
     pub fn new(piece: u8) -> Self {
         match piece {
             0 => PieceType::Pawn,
@@ -28,12 +49,26 @@ impl PieceType {
     }
 }
 
+/// An error that can occur when parsing a [`PieceType`].
 #[derive(Error, Debug)]
 pub enum PieceError {
-    #[error("the piece `{0}` is not valid")]
+    /// The piece is not valid.
+    #[error("invalid piece (expected P, N, B, R, Q, or K, got {0})")]
     Invalid(String),
 }
 
+/// A `Piece` in chess.
+///
+/// A `Piece` is represented by a [`PieceType`] and a [`Player`].
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::{Piece, PieceType, Player, Color};
+/// let piece = Piece::new(PieceType::Pawn, Player(Color::White));
+/// assert_eq!(piece.piece_type(), PieceType::Pawn);
+/// assert_eq!(piece.player(), Player(Color::White));
+/// ```
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Piece {
     piece_type: PieceType,
@@ -41,19 +76,60 @@ pub struct Piece {
 }
 
 impl Piece {
+    /// Creates a new `Piece` from a [`PieceType`] and a [`Player`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{Piece, PieceType, Player, Color};
+    /// let piece = Piece::new(PieceType::Pawn, Player(Color::White));
+    /// assert_eq!(piece.piece_type(), PieceType::Pawn);
+    /// assert_eq!(piece.player(), Player(Color::White));
+    /// ```
     pub fn new(piece_type: PieceType, player: Player) -> Self {
         Piece { piece_type, player }
     }
 
+    /// Returns the [`PieceType`] of the `Piece`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{Piece, PieceType, Player, Color};
+    /// let piece = Piece::new(PieceType::Pawn, Player(Color::White));
+    /// assert_eq!(piece.piece_type(), PieceType::Pawn);
+    /// ```
     pub fn piece_type(&self) -> PieceType {
         self.piece_type
     }
 
+    /// Returns the [`Player`] of the `Piece`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{Piece, PieceType, Player, Color};
+    /// let piece = Piece::new(PieceType::Pawn, Player(Color::White));
+    /// assert_eq!(piece.player(), Player(Color::White));
+    /// ```
     pub fn player(&self) -> Player {
         self.player
     }
 }
 
+/// Parses a `Piece` from a string.
+///
+/// # Errors
+///
+/// Returns a [`PieceError`] if the string is not a valid piece.
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::{Piece, PieceType, Player, Color};
+/// let piece: Piece = "P".parse().unwrap();
+/// assert_eq!(piece, Piece::new(PieceType::Pawn, Player(Color::White)));
+/// ```
 impl FromStr for Piece {
     type Err = PieceError;
 
@@ -80,6 +156,15 @@ impl FromStr for Piece {
     }
 }
 
+/// Formats a `Piece` as a string.
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::{Piece, PieceType, Player, Color};
+/// let piece = Piece::new(PieceType::Pawn, Player(Color::Black));
+/// assert_eq!(piece.to_string(), "p");
+/// ```
 impl fmt::Display for Piece {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let piece_type = match self.piece_type {
