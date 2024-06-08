@@ -15,7 +15,7 @@ use std::{
 /// # use chess_engine::{BitBoard};
 /// let bitboard = BitBoard(0x000000000000FF00);
 /// ```
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
 pub struct BitBoard(pub u64);
 
 /// Performs a bitwise AND operation on two `BitBoard`s.
