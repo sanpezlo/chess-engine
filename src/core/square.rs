@@ -2,6 +2,9 @@ use crate::{Color, File, FileError, Rank, RankError};
 use std::{fmt, str::FromStr};
 use thiserror::Error;
 
+/// The maximum number of squares on a chessboard.
+pub const MAX_SQUARES: usize = 64;
+
 /// An error that can occur when parsing a [`Square`].
 #[derive(Error, Debug)]
 pub enum SquareError {
@@ -128,7 +131,7 @@ impl Square {
     /// assert!(!Square(64).is_valid());
     /// ```
     pub fn is_valid(self) -> bool {
-        self.0 < 64
+        self.0 < MAX_SQUARES as u8
     }
 }
 

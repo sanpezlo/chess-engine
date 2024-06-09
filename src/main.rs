@@ -13,5 +13,5 @@ fn main() {
 
     println!("{}", board.player_bitboard(Color::White));
 
-    println!("{}", board.has_sufficient_material());
+    println!("{}", board.draw_by_insufficient_material());
 }

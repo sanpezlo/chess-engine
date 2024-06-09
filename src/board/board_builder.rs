@@ -1,5 +1,5 @@
 use super::{Board, CastleRights};
-use crate::{CastleRightsType, Piece, Player, Square};
+use crate::{CastleRightsType, Piece, Player, Square, MAX_SQUARES};
 
 /// A builder for creating a [`Board`].
 ///
@@ -17,7 +17,7 @@ use crate::{CastleRightsType, Piece, Player, Square};
 /// ```
 #[derive(Clone, Copy, Debug)]
 pub struct BoardBuilder {
-    pub(super) pieces: [Option<Piece>; 64],
+    pub(super) pieces: [Option<Piece>; MAX_SQUARES],
     pub(super) player: Player,
     pub(super) castling_rights: CastleRights,
     pub(super) en_passant_square: Option<Square>,
@@ -43,16 +43,16 @@ impl BoardBuilder {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BoardBuilder, Piece};
+    /// # use chess_engine::{BoardBuilder, Piece, MAX_SQUARES};
     /// let mut builder = BoardBuilder::new();
     ///
-    /// let mut pieces = [None; 64];
+    /// let mut pieces = [None; MAX_SQUARES];
     /// pieces[0] = Some("R".parse().unwrap());
     /// pieces[63] = Some("r".parse().unwrap());
     ///
     /// builder.pieces(pieces);
     /// ```
-    pub fn pieces(&mut self, pieces: [Option<Piece>; 64]) -> &mut BoardBuilder {
+    pub fn pieces(&mut self, pieces: [Option<Piece>; MAX_SQUARES]) -> &mut BoardBuilder {
         self.pieces = pieces;
         self
     }
@@ -198,7 +198,7 @@ impl BoardBuilder {
 impl Default for BoardBuilder {
     fn default() -> Self {
         BoardBuilder {
-            pieces: [None; 64],
+            pieces: [None; MAX_SQUARES],
             player: Player::default(),
             castling_rights: CastleRights([CastleRightsType::None; 2]),
             en_passant_square: None,

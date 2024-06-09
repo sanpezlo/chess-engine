@@ -2,6 +2,12 @@ use crate::{Color, Player};
 use std::{fmt, str::FromStr};
 use thiserror::Error;
 
+/// The maximum number of pieces per player in chess.
+pub const MAX_PIECES_PER_PLAYER: usize = 16;
+
+/// The maximum number of pawns per player in chess.
+pub const MAX_PAWNS_PER_PLAYER: usize = 8;
+
 /// The number of piece types in chess.
 pub const PIECE_TYPES: usize = 6;
 

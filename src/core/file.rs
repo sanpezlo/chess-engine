@@ -1,6 +1,9 @@
 use std::{fmt, str::FromStr};
 use thiserror::Error;
 
+/// The number of files on a chessboard.
+pub const FILES: usize = 8;
+
 /// An error that can occur when parsing a [`File`].
 #[derive(Error, Debug)]
 pub enum FileError {

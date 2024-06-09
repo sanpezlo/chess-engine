@@ -1,6 +1,9 @@
 use std::{fmt, str::FromStr};
 use thiserror::Error;
 
+/// The number of ranks on a chessboard.
+pub const RANKS: usize = 8;
+
 /// An error that can occur when parsing a [`Rank`].
 #[derive(Error, Debug)]
 pub enum RankError {

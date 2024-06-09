@@ -22,6 +22,7 @@
 use super::{BoardBuilder, CastleRightsError};
 use crate::{
     Color, File, Piece, PieceError, PieceType, Player, PlayerError, Rank, Square, SquareError,
+    FILES, MAX_HALFMOVE_CLOCK, MAX_PAWNS_PER_PLAYER, MAX_PIECES_PER_PLAYER, MAX_SQUARES, RANKS,
 };
 use std::{fmt, str::FromStr};
 use thiserror::Error;
@@ -104,6 +105,7 @@ pub enum FenError {
 /// # use chess_engine::BoardBuilder;
 /// let fen_str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 /// let board: BoardBuilder = fen_str.parse().unwrap();
+/// assert_eq!(board.to_string(), fen_str);
 /// ```
 ///
 /// [`FEN`]: fen/index.html
@@ -130,7 +132,7 @@ impl FromStr for BoardBuilder {
                 let square: Square = fen[3].parse()?;
                 let rank = square.rank();
 
-                if rank as u8 != 2 && rank as u8 != 5 {
+                if rank != Rank::Three && rank != Rank::Six {
                     return Err(FenError::EnPassantRank(rank));
                 }
 
@@ -147,7 +149,7 @@ impl FromStr for BoardBuilder {
 
             // TODO: if is not a checkmate and halfmove_clock is 100, it is a draw
 
-            if halfmove_clock > 100 {
+            if halfmove_clock > MAX_HALFMOVE_CLOCK {
                 return Err(FenError::HalfmoveClock);
             }
 
@@ -194,19 +196,19 @@ fn split_fen_string(fen: &str) -> Result<Vec<&str>, FenError> {
 ///
 /// Returns an array of pieces, where the index is the square index on the
 /// board and the value is the piece on that square.
-fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; 64], FenError> {
-    let mut pieces = [None; 64];
+fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; MAX_SQUARES], FenError> {
+    let mut pieces = [None; MAX_SQUARES];
 
     let ranks: Vec<&str> = piece_section.split('/').collect();
 
-    if ranks.len() != 8 {
+    if ranks.len() != RANKS {
         return Err(FenError::Ranks(ranks.len()));
     }
 
     let (mut num_white_pawns, mut num_white_pieces) = (0, 0);
     let (mut num_black_pawns, mut num_black_pieces) = (0, 0);
 
-    for (rank_index, rank) in ranks.iter().enumerate() {
+    for (rank_index, rank) in ranks.iter().rev().enumerate() {
         let mut file_index = 0;
 
         for file in rank.chars() {
@@ -235,40 +237,41 @@ fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; 64], FenError>
                 }
             }
 
-            pieces[(7 - rank_index) * 8 + file_index] = Some(piece);
+            pieces[Square::new(File::new(file_index as u8), Rank::new(rank_index as u8)).0
+                as usize] = Some(piece);
             file_index += 1;
         }
 
-        if file_index != 8 {
+        if file_index != FILES {
             return Err(FenError::Files(file_index));
         }
     }
 
-    if num_white_pieces > 16 {
+    if num_white_pieces > MAX_PIECES_PER_PLAYER {
         return Err(FenError::ToManyPieces {
             player: Player(Color::White),
-            num_pieces: num_white_pieces,
+            num_pieces: num_white_pieces as u8,
         });
     }
 
-    if num_black_pieces > 16 {
+    if num_black_pieces > MAX_PIECES_PER_PLAYER {
         return Err(FenError::ToManyPieces {
             player: Player(Color::Black),
-            num_pieces: num_black_pieces,
+            num_pieces: num_black_pieces as u8,
         });
     }
 
-    if num_white_pawns > 8 {
+    if num_white_pawns > MAX_PAWNS_PER_PLAYER {
         return Err(FenError::ToManyPawns {
             player: Player(Color::White),
-            num_pawns: num_white_pawns,
+            num_pawns: num_white_pawns as u8,
         });
     }
 
-    if num_black_pawns > 8 {
+    if num_black_pawns > MAX_PAWNS_PER_PLAYER {
         return Err(FenError::ToManyPawns {
             player: Player(Color::Black),
-            num_pawns: num_black_pawns,
+            num_pawns: num_black_pawns as u8,
         });
     }
 
@@ -292,10 +295,10 @@ impl fmt::Display for BoardBuilder {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut s = String::new();
 
-        for rank in (0..8).rev() {
+        for rank in (0..RANKS as u8).rev() {
             let mut empty = 0;
 
-            for file in 0..8 {
+            for file in 0..FILES as u8 {
                 let square = Square::new(File::new(file), Rank::new(rank));
 
                 if let Some(piece) = self.pieces[square.0 as usize] {
