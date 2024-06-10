@@ -22,7 +22,7 @@
 use super::{BoardBuilder, CastleRightsError};
 use crate::{
     Color, File, Piece, PieceError, PieceType, Player, PlayerError, Rank, Square, SquareError,
-    FILES, MAX_HALFMOVE_CLOCK, MAX_PAWNS_PER_PLAYER, MAX_PIECES_PER_PLAYER, MAX_SQUARES, RANKS,
+    FILES, MAX_HALFMOVE_CLOCK, MAX_PAWNS_PER_PLAYER, MAX_PIECES_PER_PLAYER, RANKS, SQUARES,
 };
 use std::{fmt, str::FromStr};
 use thiserror::Error;
@@ -196,8 +196,8 @@ fn split_fen_string(fen: &str) -> Result<Vec<&str>, FenError> {
 ///
 /// Returns an array of pieces, where the index is the square index on the
 /// board and the value is the piece on that square.
-fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; MAX_SQUARES], FenError> {
-    let mut pieces = [None; MAX_SQUARES];
+fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; SQUARES], FenError> {
+    let mut pieces = [None; SQUARES];
 
     let ranks: Vec<&str> = piece_section.split('/').collect();
 

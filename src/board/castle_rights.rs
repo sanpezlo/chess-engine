@@ -2,6 +2,9 @@ use crate::Color;
 use std::{fmt, str::FromStr};
 use thiserror::Error;
 
+/// The number of castle rights types in chess.
+pub const CASTLE_RIGHTS_TYPES: usize = 4;
+
 /// A `CastleRightsType` in chess.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum CastleRightsType {
