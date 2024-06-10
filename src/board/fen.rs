@@ -326,12 +326,13 @@ impl fmt::Display for BoardBuilder {
             f,
             "{} {} {} {} {} {}",
             s,
-            self.player,
-            self.castling_rights,
-            self.en_passant_square
+            self.state.player(),
+            self.state.castling_rights(),
+            self.state
+                .en_passant_square()
                 .map_or_else(|| "-".to_string(), |s| s.to_string()),
-            self.halfmove_clock,
-            self.fullmove_counter
+            self.state.halfmove_clock(),
+            self.state.fullmove_counter()
         )
     }
 }

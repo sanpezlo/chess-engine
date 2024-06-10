@@ -89,6 +89,6 @@ impl Board {
     /// assert_eq!(board.draw_by_fifty_moves(), false);
     /// ```
     pub fn draw_by_fifty_moves(&self) -> bool {
-        self.halfmove_clock >= MAX_HALFMOVE_CLOCK
+        self.halfmove_clock() >= MAX_HALFMOVE_CLOCK
     }
 }

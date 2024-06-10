@@ -4,10 +4,12 @@ mod board_builder;
 mod castle_rights;
 mod draw;
 pub mod fen;
+mod state;
 
 use crate::{BitBoard, Color, Piece, PieceType, Player, Square, PIECE_TYPES, PLAYERS};
 pub use board_builder::*;
 pub use castle_rights::*;
+pub use state::*;
 
 /// Maximum number of halfmoves before a draw.
 pub const MAX_HALFMOVE_CLOCK: u8 = 100;
@@ -23,32 +25,15 @@ pub const MAX_HALFMOVE_CLOCK: u8 = 100;
 /// # use chess_engine::Board;
 /// let board = Board::builder().build();
 /// ```
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Copy, Debug)]
 pub struct Board {
-    player: Player,
     piece_types_bitboards: [BitBoard; PIECE_TYPES],
     player_bitboards: [BitBoard; PLAYERS],
-    castling_rights: CastleRights,
-    en_passant_square: Option<Square>,
-    halfmove_clock: u8,
-    fullmove_counter: u16,
+    state: State,
 }
 
 /// Getters for the `Board` struct.
 impl Board {
-    /// Returns the [`Player`] to move.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use chess_engine::{Board, Player, Color};
-    /// let board = Board::default();
-    /// assert_eq!(board.player(), Player(Color::White));
-    /// ```
-    pub fn player(&self) -> Player {
-        self.player
-    }
-
     /// Returns the [`BitBoard`] for a specific [`PieceType`].
     ///
     /// # Examples
@@ -80,6 +65,34 @@ impl Board {
         self.player_bitboards[color as usize]
     }
 
+    /// Returns the [`BitBoard`] for a specific [`Piece`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{Board, BitBoard, Piece, Color, PieceType, Player};
+    /// let board = Board::default();
+    /// let piece = Piece::new(PieceType::Pawn, Player(Color::White));
+    /// assert_eq!(board.piece_bitboard(piece), BitBoard(0x000000000000FF00));
+    /// ```
+    pub fn piece_bitboard(&self, piece: Piece) -> BitBoard {
+        self.piece_types_bitboards[piece.piece_type() as usize]
+            & self.player_bitboards[piece.player().0 as usize]
+    }
+
+    /// Returns the [`Player`] to move.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{Board, Player, Color};
+    /// let board = Board::default();
+    /// assert_eq!(board.player(), Player(Color::White));
+    /// ```
+    pub fn player(&self) -> Player {
+        self.state.player()
+    }
+
     /// Returns the [`CastleRights`] for the board.
     ///
     /// # Examples
@@ -90,7 +103,7 @@ impl Board {
     /// assert_ne!(board.castling_rights(), CastleRights::default());
     /// ```
     pub fn castling_rights(&self) -> CastleRights {
-        self.castling_rights
+        self.state.castling_rights()
     }
 
     /// Returns the En Passant [`Square`] if it exists.
@@ -103,7 +116,7 @@ impl Board {
     /// assert_eq!(board.en_passant_square(), None);
     /// ```
     pub fn en_passant_square(&self) -> Option<Square> {
-        self.en_passant_square
+        self.state.en_passant_square()
     }
 
     /// Returns the halfmove clock.
@@ -118,7 +131,7 @@ impl Board {
     /// assert_eq!(board.halfmove_clock(), 0);
     /// ```
     pub fn halfmove_clock(&self) -> u8 {
-        self.halfmove_clock
+        self.state.halfmove_clock()
     }
 
     /// Returns the fullmove counter.
@@ -133,22 +146,7 @@ impl Board {
     /// assert_eq!(board.fullmove_counter(), 1);
     /// ```
     pub fn fullmove_counter(&self) -> u16 {
-        self.fullmove_counter
-    }
-
-    /// Returns the [`BitBoard`] for a specific [`Piece`].
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use chess_engine::{Board, BitBoard, Piece, Color, PieceType, Player};
-    /// let board = Board::default();
-    /// let piece = Piece::new(PieceType::Pawn, Player(Color::White));
-    /// assert_eq!(board.piece_bitboard(piece), BitBoard(0x000000000000FF00));
-    /// ```
-    pub fn piece_bitboard(&self, piece: Piece) -> BitBoard {
-        self.piece_types_bitboards[piece.piece_type() as usize]
-            & self.player_bitboards[piece.player().0 as usize]
+        self.state.fullmove_counter()
     }
 }
 
@@ -203,7 +201,13 @@ impl Board {
 impl Default for Board {
     fn default() -> Self {
         Self {
-            player: Player(Color::White),
+            state: State::new(
+                Player(Color::White),
+                CastleRights([CastleRightsType::Both; 2]),
+                None,
+                0,
+                1,
+            ),
             piece_types_bitboards: [
                 BitBoard(0x00FF00000000FF00),
                 BitBoard(0x4200000000000042),
@@ -213,10 +217,6 @@ impl Default for Board {
                 BitBoard(0x1000000000000010),
             ],
             player_bitboards: [BitBoard(0x000000000000FFFF), BitBoard(0xFFFF000000000000)],
-            castling_rights: CastleRights([CastleRightsType::Both; 2]),
-            en_passant_square: None,
-            halfmove_clock: 0,
-            fullmove_counter: 1,
         }
     }
 }

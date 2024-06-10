@@ -1,5 +1,5 @@
 use super::{Board, CastleRights};
-use crate::{CastleRightsType, Piece, Player, Square, SQUARES};
+use crate::{Piece, Player, Square, State, SQUARES};
 
 /// A builder for creating a [`Board`].
 ///
@@ -18,11 +18,7 @@ use crate::{CastleRightsType, Piece, Player, Square, SQUARES};
 #[derive(Clone, Copy, Debug)]
 pub struct BoardBuilder {
     pub(super) pieces: [Option<Piece>; SQUARES],
-    pub(super) player: Player,
-    pub(super) castling_rights: CastleRights,
-    pub(super) en_passant_square: Option<Square>,
-    pub(super) halfmove_clock: u8,
-    pub(super) fullmove_counter: u16,
+    pub(super) state: State,
 }
 
 impl BoardBuilder {
@@ -88,7 +84,7 @@ impl BoardBuilder {
     /// builder.player("b".parse().unwrap());
     /// ```
     pub fn player(&mut self, player: Player) -> &mut BoardBuilder {
-        self.player = player;
+        self.state.set_player(player);
         self
     }
 
@@ -102,7 +98,7 @@ impl BoardBuilder {
     /// builder.castling_rights(CastleRights::default());
     /// ```
     pub fn castling_rights(&mut self, castling_rights: CastleRights) -> &mut BoardBuilder {
-        self.castling_rights = castling_rights;
+        self.state.set_castling_rights(castling_rights);
         self
     }
 
@@ -116,7 +112,7 @@ impl BoardBuilder {
     /// builder.en_passant_square(Some("e3".parse().unwrap()));
     /// ```
     pub fn en_passant_square(&mut self, en_passant_square: Option<Square>) -> &mut BoardBuilder {
-        self.en_passant_square = en_passant_square;
+        self.state.set_en_passant_square(en_passant_square);
         self
     }
 
@@ -133,7 +129,7 @@ impl BoardBuilder {
     /// builder.halfmove_clock(50);
     /// ```
     pub fn halfmove_clock(&mut self, halfmove_clock: u8) -> &mut BoardBuilder {
-        self.halfmove_clock = halfmove_clock;
+        self.state.set_halfmove_clock(halfmove_clock);
         self
     }
 
@@ -151,7 +147,7 @@ impl BoardBuilder {
     pub fn fullmove_counter(&mut self, fullmove_counter: u16) -> &mut BoardBuilder {
         assert!(fullmove_counter > 0);
 
-        self.fullmove_counter = fullmove_counter;
+        self.state.set_fullmove_counter(fullmove_counter);
         self
     }
 
@@ -167,13 +163,9 @@ impl BoardBuilder {
     /// let board = builder.build();
     pub fn build(self) -> Board {
         let mut board = Board {
-            player: self.player,
             piece_types_bitboards: Default::default(),
             player_bitboards: Default::default(),
-            castling_rights: self.castling_rights,
-            en_passant_square: self.en_passant_square,
-            halfmove_clock: self.halfmove_clock,
-            fullmove_counter: self.fullmove_counter,
+            state: self.state,
         };
 
         for (square, piece) in self.pieces.iter().enumerate() {
@@ -199,11 +191,7 @@ impl Default for BoardBuilder {
     fn default() -> Self {
         BoardBuilder {
             pieces: [None; SQUARES],
-            player: Player::default(),
-            castling_rights: CastleRights([CastleRightsType::None; 2]),
-            en_passant_square: None,
-            halfmove_clock: 0,
-            fullmove_counter: 1,
+            state: State::default(),
         }
     }
 }
