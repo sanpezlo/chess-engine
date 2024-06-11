@@ -1,4 +1,4 @@
-use std::{fmt, str::FromStr};
+use std::{fmt, ops::Not, str::FromStr};
 use thiserror::Error;
 
 /// An error that can occur when parsing a [`Color`].
@@ -37,6 +37,26 @@ impl Color {
             0 => Color::White,
             1 => Color::Black,
             _ => unreachable!(),
+        }
+    }
+}
+
+/// Negates a `Color`.
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::Color;
+/// let color = Color::White;
+/// assert_eq!(!color, Color::Black);
+/// ```
+impl Not for Color {
+    type Output = Self;
+
+    fn not(self) -> Self::Output {
+        match self {
+            Color::White => Color::Black,
+            Color::Black => Color::White,
         }
     }
 }

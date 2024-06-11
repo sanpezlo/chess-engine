@@ -1,4 +1,4 @@
-use chess_engine::{Board, Color};
+use chess_engine::{Board, Color, ZOBRIST};
 
 fn main() {
     let mut builder = Board::builder();
@@ -14,4 +14,6 @@ fn main() {
     println!("{}", board.player_bitboard(Color::White));
 
     println!("{}", board.draw_by_insufficient_material());
+
+    println!("{:?}", *ZOBRIST);
 }

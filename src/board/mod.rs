@@ -5,14 +5,16 @@ mod castle_rights;
 mod draw;
 pub mod fen;
 mod state;
+mod zobrist;
 
 use crate::{BitBoard, Color, Piece, PieceType, Player, Square, PIECE_TYPES, PLAYERS};
 pub use board_builder::*;
 pub use castle_rights::*;
 pub use state::*;
+pub use zobrist::*;
 
-/// Maximum number of halfmoves before a draw.
-pub const MAX_HALFMOVE_CLOCK: u8 = 100;
+/// Average number of moves in a game.
+pub const AVERAGE_MOVES: usize = 79;
 
 /// Chessboard representation.
 ///
@@ -25,11 +27,12 @@ pub const MAX_HALFMOVE_CLOCK: u8 = 100;
 /// # use chess_engine::Board;
 /// let board = Board::builder().build();
 /// ```
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Debug)]
 pub struct Board {
     piece_types_bitboards: [BitBoard; PIECE_TYPES],
     player_bitboards: [BitBoard; PLAYERS],
     state: State,
+    history: Vec<State>,
 }
 
 /// Getters for the `Board` struct.
@@ -148,6 +151,20 @@ impl Board {
     pub fn fullmove_counter(&self) -> u16 {
         self.state.fullmove_counter()
     }
+
+    /// Returns the history of the board.
+    /// The history is a vector of [`State`] structs.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::Board;
+    /// let board = Board::default();
+    /// assert_eq!(board.history().len(), 0);
+    /// ```
+    pub fn history(&self) -> &Vec<State> {
+        &self.history
+    }
 }
 
 impl Board {
@@ -185,6 +202,32 @@ impl Board {
         self.piece_types_bitboards[piece_type] |= square.into();
         self.player_bitboards[player] |= square.into();
     }
+
+    /// Returns the hash of the board.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::Board;
+    /// let board = Board::default();
+    /// let hash = board.hash();
+    /// ```
+    pub fn hash(&self) -> u64 {
+        let mut hash = self.state.partial_hash();
+
+        for piece_type in 0..PIECE_TYPES {
+            let piece_type = PieceType::new(piece_type as u8);
+            for color in 0..PLAYERS {
+                let piece = Piece::new(piece_type, Player(Color::new(color as u8)));
+
+                for square in self.piece_bitboard(piece) {
+                    hash ^= ZOBRIST.piece(square, piece);
+                }
+            }
+        }
+
+        hash
+    }
 }
 
 /// Default implementation for the `Board` struct.
@@ -201,13 +244,6 @@ impl Board {
 impl Default for Board {
     fn default() -> Self {
         Self {
-            state: State::new(
-                Player(Color::White),
-                CastleRights([CastleRightsType::Both; 2]),
-                None,
-                0,
-                1,
-            ),
             piece_types_bitboards: [
                 BitBoard(0x00FF00000000FF00),
                 BitBoard(0x4200000000000042),
@@ -217,6 +253,14 @@ impl Default for Board {
                 BitBoard(0x1000000000000010),
             ],
             player_bitboards: [BitBoard(0x000000000000FFFF), BitBoard(0xFFFF000000000000)],
+            state: State::new(
+                Player(Color::White),
+                CastleRights([CastleRightsType::Both; 2]),
+                None,
+                0,
+                1,
+            ),
+            history: Vec::with_capacity(AVERAGE_MOVES),
         }
     }
 }

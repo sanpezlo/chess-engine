@@ -211,3 +211,56 @@ impl fmt::Display for BitBoard {
         write!(f, "{}", s)
     }
 }
+
+/// An iterator over the set bits of a `BitBoard`.
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::{BitBoard, Square, File, Rank};
+/// let bitboard = BitBoard(0x000000000000FF00);
+/// let mut iter = bitboard.into_iter();
+/// assert_eq!(iter.next(), Some(Square::new(File::A, Rank::Two)));
+/// assert_eq!(iter.next(), Some(Square::new(File::B, Rank::Two)));
+/// ```
+pub struct BitBoardIter {
+    bitboard: BitBoard,
+}
+
+/// Implements the `Iterator` trait for `BitBoardIter`.
+///
+/// The iterator yields the set bits of a `BitBoard`.
+impl Iterator for BitBoardIter {
+    type Item = Square;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.bitboard == BitBoard(0) {
+            return None;
+        }
+
+        let trailing_zeros = self.bitboard.0.trailing_zeros();
+        self.bitboard.0 ^= 1 << trailing_zeros;
+
+        Some(Square(trailing_zeros as u8))
+    }
+}
+
+/// Converts a `BitBoard` into an iterator over its set bits.
+///
+/// # Examples
+///
+/// ```no_run
+/// # use chess_engine::{BitBoard, Square, File, Rank};
+/// let bitboard = BitBoard(0x000000000000FF00);
+/// let mut iter = bitboard.into_iter();
+/// assert_eq!(iter.next(), Some(Square::new(File::A, Rank::Two)));
+/// assert_eq!(iter.next(), Some(Square::new(File::B, Rank::Two)));
+/// ```
+impl IntoIterator for BitBoard {
+    type Item = Square;
+    type IntoIter = BitBoardIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        BitBoardIter { bitboard: self }
+    }
+}

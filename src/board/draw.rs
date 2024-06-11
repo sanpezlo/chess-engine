@@ -1,4 +1,4 @@
-use crate::{BitBoard, Board, Color, Piece, PieceType, Player, Square, MAX_HALFMOVE_CLOCK};
+use crate::{BitBoard, Board, Color, Piece, PieceType, Player, MAX_HALFMOVE_CLOCK};
 
 impl Board {
     /// Returns `true` if the [`Player`] has the bishop pair.
@@ -11,22 +11,16 @@ impl Board {
     /// assert_eq!(board.has_bishop_pair(Color::White), true);
     /// ```
     pub fn has_bishop_pair(&self, color: Color) -> bool {
-        let mut bitboard = self.piece_bitboard(Piece::new(PieceType::Bishop, Player(color)));
+        let bitboard = self.piece_bitboard(Piece::new(PieceType::Bishop, Player(color)));
 
         let mut white_square = 0;
         let mut black_square = 0;
 
-        if bitboard.0.count_ones() >= 2 {
-            while bitboard.0 != 0 {
-                let trailing_zeros = bitboard.0.trailing_zeros();
-                let square = Square(trailing_zeros as u8);
-                if square.color() == Color::White {
-                    white_square += 1;
-                } else {
-                    black_square += 1;
-                }
-
-                bitboard ^= BitBoard(1 << trailing_zeros);
+        for square in bitboard {
+            if square.color() == Color::White {
+                white_square += 1;
+            } else {
+                black_square += 1;
             }
         }
 

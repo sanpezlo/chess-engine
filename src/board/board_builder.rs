@@ -1,5 +1,5 @@
 use super::{Board, CastleRights};
-use crate::{Piece, Player, Square, State, SQUARES};
+use crate::{Piece, Player, Square, State, AVERAGE_MOVES, SQUARES};
 
 /// A builder for creating a [`Board`].
 ///
@@ -166,6 +166,7 @@ impl BoardBuilder {
             piece_types_bitboards: Default::default(),
             player_bitboards: Default::default(),
             state: self.state,
+            history: Vec::with_capacity(AVERAGE_MOVES),
         };
 
         for (square, piece) in self.pieces.iter().enumerate() {
