@@ -1,4 +1,4 @@
-use crate::{BitBoard, Board, Color, Piece, PieceType, Player, MAX_HALFMOVE_CLOCK};
+use crate::{BitBoard, Board, Color, Piece, PieceType, Player, MAX_HALFMOVE_CLOCK, PLAYERS};
 
 impl Board {
     /// Returns `true` if the [`Player`] has the bishop pair.
@@ -37,37 +37,94 @@ impl Board {
     /// assert_eq!(board.draw_by_insufficient_material(), false);
     /// ```
     pub fn draw_by_insufficient_material(&self) -> bool {
-        for color in [Color::White, Color::Black] {
-            if self.piece_bitboard(Piece::new(PieceType::Queen, Player(color))) > BitBoard(0) {
+        for player_color in 0..PLAYERS {
+            if self.piece_bitboard(Piece::new(
+                PieceType::Queen,
+                Player(Color::new(player_color as u8)),
+            )) > BitBoard(0)
+            {
                 return false;
             }
 
-            if self.piece_bitboard(Piece::new(PieceType::Rook, Player(color))) > BitBoard(0) {
+            if self.piece_bitboard(Piece::new(
+                PieceType::Rook,
+                Player(Color::new(player_color as u8)),
+            )) > BitBoard(0)
+            {
                 return false;
             }
 
-            if self.piece_bitboard(Piece::new(PieceType::Pawn, Player(color))) > BitBoard(0) {
+            if self.piece_bitboard(Piece::new(
+                PieceType::Pawn,
+                Player(Color::new(player_color as u8)),
+            )) > BitBoard(0)
+            {
                 return false;
             }
 
-            if self.has_bishop_pair(color) {
+            if self.has_bishop_pair(Color::new(player_color as u8)) {
                 return false;
             }
 
-            if self.piece_bitboard(Piece::new(PieceType::Bishop, Player(color))) > BitBoard(0)
-                && self.piece_bitboard(Piece::new(PieceType::Knight, Player(color))) > BitBoard(0)
+            if self.piece_bitboard(Piece::new(
+                PieceType::Bishop,
+                Player(Color::new(player_color as u8)),
+            )) > BitBoard(0)
+                && self.piece_bitboard(Piece::new(
+                    PieceType::Knight,
+                    Player(Color::new(player_color as u8)),
+                )) > BitBoard(0)
             {
                 return false;
             }
 
             if self
-                .piece_bitboard(Piece::new(PieceType::Knight, Player(color)))
+                .piece_bitboard(Piece::new(
+                    PieceType::Knight,
+                    Player(Color::new(player_color as u8)),
+                ))
                 .0
                 .count_ones()
                 >= 3
             {
                 return false;
             }
+        }
+
+        let w_bishops = self.piece_bitboard(Piece::new(PieceType::Bishop, Player(Color::White)));
+
+        let w_knights = self.piece_bitboard(Piece::new(PieceType::Knight, Player(Color::White)));
+
+        let b_bishops = self.piece_bitboard(Piece::new(PieceType::Bishop, Player(Color::Black)));
+
+        let b_knights = self.piece_bitboard(Piece::new(PieceType::Knight, Player(Color::Black)));
+
+        if w_bishops.0.count_ones() != 0 && b_bishops.0.count_ones() != 0 {
+            let mut w = false;
+            let mut b = false;
+            for square in w_bishops {
+                if square.color() == Color::White {
+                    w = true
+                } else {
+                    b = true
+                }
+            }
+
+            for square in b_bishops {
+                if square.color() == Color::White {
+                    w = true
+                } else {
+                    b = true
+                }
+            }
+
+            if w && b {
+                return false;
+            }
+        }
+
+        if w_knights.0.count_ones() != 0 && b_knights.0.count_ones() != 0 {
+            return false;
         }
 
         return true;
