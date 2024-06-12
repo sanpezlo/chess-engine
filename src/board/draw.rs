@@ -85,4 +85,31 @@ impl Board {
     pub fn draw_by_fifty_moves(&self) -> bool {
         self.halfmove_clock() >= MAX_HALFMOVE_CLOCK
     }
+
+    /// Returns `true` if the game is a draw by threefold repetition.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{Board};
+    /// let board = Board::default();
+    /// assert_eq!(board.draw_by_repetition(), false);
+    /// ```
+    pub fn draw_by_repetition(&self) -> bool {
+        let mut repetitions = 0;
+
+        let hash = self.hash();
+
+        for state in self.history.iter().rev() {
+            if state.halfmove_clock() == 0 {
+                break;
+            }
+
+            if state.hash() == hash {
+                repetitions += 1;
+            }
+        }
+
+        repetitions >= 2
+    }
 }
