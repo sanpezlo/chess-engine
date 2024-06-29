@@ -264,3 +264,72 @@ impl IntoIterator for BitBoard {
         BitBoardIter { bitboard: self }
     }
 }
+
+impl BitBoard {
+    /// An empty `BitBoard`.
+    pub const EMPTY: Self = Self(0);
+}
+
+/// A macro for creating a bitboard.
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::bitboard;
+/// let bb = bitboard! {
+///     X X X X X X X X
+///     X . . . . . . X
+///     X . . . . . . X
+///     X . . . . . . X
+///     X . . . . . . X
+///     X . . . . . . X
+///     X . . . . . . X
+///     X X X X X X X X
+/// };
+/// ```
+#[macro_export]
+macro_rules! bitboard {
+    (@is_valid_bitboard
+        $a8:tt $b8:tt $c8:tt $d8:tt $e8:tt $f8:tt $g8:tt $h8:tt
+        $a7:tt $b7:tt $c7:tt $d7:tt $e7:tt $f7:tt $g7:tt $h7:tt
+        $a6:tt $b6:tt $c6:tt $d6:tt $e6:tt $f6:tt $g6:tt $h6:tt
+        $a5:tt $b5:tt $c5:tt $d5:tt $e5:tt $f5:tt $g5:tt $h5:tt
+        $a4:tt $b4:tt $c4:tt $d4:tt $e4:tt $f4:tt $g4:tt $h4:tt
+        $a3:tt $b3:tt $c3:tt $d3:tt $e3:tt $f3:tt $g3:tt $h3:tt
+        $a2:tt $b2:tt $c2:tt $d2:tt $e2:tt $f2:tt $g2:tt $h2:tt
+        $a1:tt $b1:tt $c1:tt $d1:tt $e1:tt $f1:tt $g1:tt $h1:tt
+    ) => {};
+    (@is_valid_bitboard $($token:tt)*) => {
+        compile_error!("Expected 64 squares")
+    };
+    (@is_valid_square X) => {
+        true
+    };
+    (@is_valid_square .) => {
+        false
+    };
+    (@is_valid_square $token:tt) => {
+        compile_error!(concat!(
+            "Expected only `X` or `.` tokens, found `",
+            stringify!($token),
+            "`"
+        ))
+    };
+    ($($token:tt)*) => {{
+        $crate::bitboard! { @is_valid_bitboard $($token)* }
+        const BITBOARD: $crate::BitBoard = {
+            let mut bitboard = $crate::BitBoard::EMPTY;
+            let mut index = 0;
+
+            $(
+                if $crate::bitboard!(@is_valid_square $token) {
+                    bitboard.0 |= 1 << index;
+                }
+                index += 1;
+            )*
+
+            bitboard
+        };
+        BITBOARD
+    }};
+}

@@ -11,5 +11,6 @@ applications, consider using [Stockfish](https://stockfishchess.org/) or
 For the development of this library, I am following the book
 [Creating the Rustic chess engine](rustic-chess.org) and the
 [Chess Programming Wiki](https://www.chessprogramming.org), as well as
-repositories like [Chess](https://github.com/jordanbray/chess) and
-[Pleco](https://github.com/pleco-rs/Pleco).
+repositories like [Chess](https://github.com/jordanbray/chess),
+[Pleco](https://github.com/pleco-rs/Pleco) and
+[Cozy-chess](https://github.com/analog-hors/cozy-chess).

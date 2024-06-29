@@ -1,19 +1,16 @@
-use chess_engine::{Board, Color, ZOBRIST};
+use chess_engine::bitboard;
 
 fn main() {
-    let mut builder = Board::builder();
+    let bb = bitboard! {
+        X X X X X X X X
+        X . . . . . . X
+        X . . . . . . X
+        X . . . . . . X
+        X . . . . . . X
+        X . . . . . . X
+        X . . . . . . X
+        X X X X X X X X
+    };
 
-    builder.put_piece("N".parse().unwrap(), "a1".parse().unwrap());
-
-    builder.put_piece("N".parse().unwrap(), "c2".parse().unwrap());
-
-    builder.put_piece("N".parse().unwrap(), "a2".parse().unwrap());
-
-    let board = builder.build();
-
-    println!("{}", board.player_bitboard(Color::White));
-
-    println!("{}", board.draw_by_insufficient_material());
-
-    println!("{:?}", *ZOBRIST);
+    println!("{}", bb);
 }

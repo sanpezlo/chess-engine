@@ -3,6 +3,7 @@
 mod bitboard;
 mod color;
 mod file;
+mod macros;
 mod piece;
 mod player;
 mod rank;
