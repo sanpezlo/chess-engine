@@ -1,5 +1,6 @@
-use crate::{Color, File, FileError, Rank, RankError};
 use std::{fmt, str::FromStr};
+
+use crate::{Color, File, FileError, Rank, RankError};
 use thiserror::Error;
 
 /// An error that can occur when parsing a [`Square`].
@@ -16,97 +17,86 @@ pub enum SquareError {
     /// The file is not valid.
     #[error("{0}")]
     File(#[from] FileError),
-
-    /// An unknown error occurred.
-    #[error("uknown error")]
-    Unknown,
 }
 
-/// A `Square` on a chessboard.
-///
-/// A `Square` is represented by a number from 0 to 63. The `Square` is
-/// calculated by multiplying the [`Rank`] by 8 and adding the [`File`].
-///
-/// # Examples
-///
-/// ```
-/// # use chess_engine::{Square, File, Rank, Color};
-/// let square = Square::new(File::A, Rank::One);
-/// assert_eq!(square.file(), File::A);
-/// assert_eq!(square.rank(), Rank::One);
-/// assert_eq!(square.color(), Color::Black);
-/// ```
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub struct Square(pub u8);
+macro_rules! create_square {
+    ($($square:ident),*) => {
+        crate::core::macros::create_enum! {
+            #[doc = concat!(
+                "A `Square` on a chessboard.\n",
+                "\n",
+                "A `Square` is represented by a number from 0 to 63. The `Square` is\n",
+                "calculated by multiplying the [`Rank`] by 8 and adding the [`File`]."
+            )]
+            #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+            pub enum Square {
+                $(
+                    #[doc = concat!("The ", stringify!($square), " square.")]
+                    $square
+                ),*
+            }
+        }
+    }
+}
+
+create_square! {
+    A1, B1, C1, D1, E1, F1, G1, H1,
+    A2, B2, C2, D2, E2, F2, G2, H2,
+    A3, B3, C3, D3, E3, F3, G3, H3,
+    A4, B4, C4, D4, E4, F4, G4, H4,
+    A5, B5, C5, D5, E5, F5, G5, H5,
+    A6, B6, C6, D6, E6, F6, G6, H6,
+    A7, B7, C7, D7, E7, F7, G7, H7,
+    A8, B8, C8, D8, E8, F8, G8, H8
+}
 
 impl Square {
-    /// The number of squares on a chessboard.
-    pub const LEN: usize = 64;
-
     /// Creates a new `Square` from a [`File`] and a [`Rank`].
     ///
     /// # Examples
     ///
     /// ```
     /// # use chess_engine::{Square, File, Rank};
-    /// let square = Square::new(File::A, Rank::One);
-    /// assert_eq!(square, Square(0));
+    /// let square = Square::with_file_rank(File::F, Rank::Four);
+    /// assert_eq!(square, Square::F4);
     /// ```
-    pub fn new(file: File, rank: Rank) -> Self {
-        Self(rank as u8 * 8 + file as u8)
+    pub fn with_file_rank(file: File, rank: Rank) -> Self {
+        Self::new(rank as usize * 8 + file as usize)
     }
 
     /// Returns the [`File`] of the `Square`.
     ///
-    /// # Panics
-    ///
-    /// Panics if the `Square` is not a legal square.
-    ///
     /// # Examples
     ///
     /// ```
     /// # use chess_engine::{Square, File, Rank};
-    /// assert_eq!(Square::new(File::A, Rank::One).file(), File::A);
+    /// assert_eq!(Square::G5.file(), File::G);
     /// ```
     pub fn file(self) -> File {
-        assert!(self.is_valid());
-
-        File::new((self.0 % 8) as usize)
+        File::new(self as usize % 8)
     }
 
     /// Returns the [`Rank`] of the `Square`.
     ///
-    /// # Panics
-    ///
-    /// Panics if the `Square` is not a legal square.
-    ///
     /// # Examples
     ///
     /// ```
     /// # use chess_engine::{Square, File, Rank};
-    /// assert_eq!(Square::new(File::A, Rank::One).rank(), Rank::One);
+    /// assert_eq!(Square::G5.rank(), Rank::Five);
     /// ```
     pub fn rank(self) -> Rank {
-        assert!(self.is_valid());
-
-        Rank::new((self.0 / 8) as usize)
+        Rank::new(self as usize / 8)
     }
 
     /// Returns the [`Color`] of the `Square`.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the `Square` is not a legal square.
     ///
     /// # Examples
     ///
     /// ```
     /// # use chess_engine::{Square, File, Rank, Color};
-    /// assert_eq!(Square::new(File::A, Rank::One).color(), Color::Black);
+    /// assert_eq!(Square::A1.color(), Color::Black);
     /// ```
     pub fn color(self) -> Color {
-        assert!(self.is_valid());
-
         if self.rank() as u8 % 2 == 0 {
             if self.file() as u8 % 2 == 0 {
                 Color::Black
@@ -121,17 +111,19 @@ impl Square {
             }
         }
     }
+}
 
-    /// Returns `true` if the `Square` is a legal square.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use chess_engine::{Square, File, Rank};
-    /// assert!(!Square(64).is_valid());
-    /// ```
-    pub fn is_valid(self) -> bool {
-        self.0 < Square::LEN as u8
+/// The default `Square` is `Square::A1`.
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::Square;
+/// assert_eq!(Square::default(), Square::A1);
+/// ```
+impl Default for Square {
+    fn default() -> Self {
+        Square::A1
     }
 }
 
@@ -146,24 +138,22 @@ impl Square {
 /// ```
 /// # use chess_engine::{Square, File, Rank};
 /// assert_eq!(
-///    "a1".parse::<Square>().unwrap(),
-///    Square::new(File::A, Rank::One)
+///    "h7".parse::<Square>().unwrap(),
+///    Square::H7
 /// );
 /// ```
 impl FromStr for Square {
     type Err = SquareError;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let mut chars = s.chars();
-
-        if s.len() != 2 {
-            return Err(SquareError::Length(s.len()));
+    fn from_str(str: &str) -> Result<Self, Self::Err> {
+        if str.len() != 2 {
+            return Err(SquareError::Length(str.len()));
         }
 
-        let file = chars.next().ok_or(SquareError::Unknown)?;
-        let rank = chars.next().ok_or(SquareError::Unknown)?;
+        let file = &str[0..1];
+        let rank = &str[1..2];
 
-        Ok(Square::new(
+        Ok(Square::with_file_rank(
             file.to_string().parse()?,
             rank.to_string().parse()?,
         ))
@@ -177,8 +167,8 @@ impl FromStr for Square {
 /// ```
 /// # use chess_engine::{Square, File, Rank};
 /// assert_eq!(
-///    Square::new(File::A, Rank::One).to_string(),
-///   "a1"
+///    Square::F2.to_string(),
+///   "f2"
 /// );
 impl fmt::Display for Square {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

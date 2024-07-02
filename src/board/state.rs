@@ -140,7 +140,6 @@ impl State {
     ///
     /// # Panics
     ///
-    /// Panics if the `Square` is not a legal square.
     /// Panics if the en passant square is not on the third or sixth rank
     ///
     /// # Examples
@@ -149,7 +148,7 @@ impl State {
     /// # use chess_engine::{State, Square, File, Rank};
     /// let mut state = State::default();
     /// state.set_en_passant_square(Some("e3".parse().unwrap()));
-    /// assert_eq!(state.en_passant_square(), Some(Square::new(File::E, Rank::Three)));
+    /// assert_eq!(state.en_passant_square(), Some(Square::E3));
     /// ```
     pub fn set_en_passant_square(&mut self, en_passant_square: Option<Square>) {
         assert!(

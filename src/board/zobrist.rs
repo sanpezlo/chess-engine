@@ -74,10 +74,6 @@ impl Zobrist {
 
     /// Returns the hash for a [`Piece`] on a [`Square`].
     ///
-    /// # Panics
-    ///
-    /// Panics if the [`Square`] is not a legal square.
-    ///
     /// # Examples
     ///
     /// ```
@@ -87,16 +83,10 @@ impl Zobrist {
     /// let hash = ZOBRIST.piece(square, piece);
     /// ```
     pub fn piece(&self, square: Square, piece: Piece) -> u64 {
-        assert!(square.is_valid());
-
-        self.pieces[square.0 as usize][piece.color() as usize][piece.piece_type() as usize]
+        self.pieces[square as usize][piece.color() as usize][piece.piece_type() as usize]
     }
 
     /// Returns the hash for en passant on a [`Square`].
-    ///
-    /// # Panics
-    ///
-    /// Panics if the [`Square`] is not a legal square.
     ///
     /// # Examples
     ///

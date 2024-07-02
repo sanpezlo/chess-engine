@@ -55,10 +55,6 @@ impl BoardBuilder {
 
     /// Puts a [`Piece`] on a [`Square`] on the board.
     ///
-    /// # Panics
-    ///
-    /// Panics if the [`Square`] is not a legal square.
-    ///
     /// # Examples
     ///
     /// ```
@@ -68,9 +64,7 @@ impl BoardBuilder {
     ///     .build();
     /// ```
     pub fn put_piece(&mut self, piece: Piece, square: Square) -> &mut BoardBuilder {
-        assert!(square.is_valid());
-
-        self.pieces[square.0 as usize] = Some(piece);
+        self.pieces[square as usize] = Some(piece);
         self
     }
 
@@ -171,7 +165,7 @@ impl BoardBuilder {
 
         for (square, piece) in self.pieces.iter().enumerate() {
             if let Some(piece) = piece {
-                board.put_piece(*piece, Square(square as u8));
+                board.put_piece(*piece, Square::new(square));
             }
         }
 

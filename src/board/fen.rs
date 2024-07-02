@@ -236,7 +236,7 @@ fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; Square::LEN], 
                 }
             }
 
-            pieces[Square::new(File::new(file_index), Rank::new(rank_index)).0 as usize] =
+            pieces[Square::with_file_rank(File::new(file_index), Rank::new(rank_index)) as usize] =
                 Some(piece);
             file_index += 1;
         }
@@ -298,9 +298,9 @@ impl fmt::Display for BoardBuilder {
             let mut empty = 0;
 
             for file in 0..File::LEN {
-                let square = Square::new(File::new(file), Rank::new(rank));
+                let square = Square::with_file_rank(File::new(file), Rank::new(rank));
 
-                if let Some(piece) = self.pieces[square.0 as usize] {
+                if let Some(piece) = self.pieces[square as usize] {
                     if empty > 0 {
                         s.push_str(&empty.to_string());
                         empty = 0;

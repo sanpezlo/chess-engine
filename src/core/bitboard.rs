@@ -139,21 +139,15 @@ impl Not for BitBoard {
 
 /// Converts a [`Square`] to a [`BitBoard`].
 ///
-/// # Panics
-///
-/// Panics if the [`Square`] is not a legal square.
-///
 /// # Examples
 ///
 /// ```
 /// # use chess_engine::{BitBoard, Square, File, Rank};
-/// let bitboard: BitBoard = Square::new(File::A, Rank::One).into();
+/// let bitboard: BitBoard = Square::with_file_rank(File::A, Rank::One).into();
 /// ```
 impl From<Square> for BitBoard {
     fn from(square: Square) -> Self {
-        assert!(square.is_valid());
-
-        Self(1u64 << square.0)
+        Self(1u64 << square as usize)
     }
 }
 
@@ -194,7 +188,7 @@ impl fmt::Display for BitBoard {
             for file in 0..File::LEN {
                 let file = File::new(file);
 
-                if BitBoard::from(Square::new(file, rank)).0 & self.0 != 0 {
+                if BitBoard::from(Square::with_file_rank(file, rank)).0 & self.0 != 0 {
                     s.push_str("X ");
                 } else {
                     s.push_str(". ");
@@ -220,8 +214,8 @@ impl fmt::Display for BitBoard {
 /// # use chess_engine::{BitBoard, Square, File, Rank};
 /// let bitboard = BitBoard(0x000000000000FF00);
 /// let mut iter = bitboard.into_iter();
-/// assert_eq!(iter.next(), Some(Square::new(File::A, Rank::Two)));
-/// assert_eq!(iter.next(), Some(Square::new(File::B, Rank::Two)));
+/// assert_eq!(iter.next(), Some(Square::A2));
+/// assert_eq!(iter.next(), Some(Square::B2));
 /// ```
 pub struct BitBoardIter {
     bitboard: BitBoard,
@@ -241,7 +235,7 @@ impl Iterator for BitBoardIter {
         let trailing_zeros = self.bitboard.0.trailing_zeros();
         self.bitboard.0 ^= 1 << trailing_zeros;
 
-        Some(Square(trailing_zeros as u8))
+        Some(Square::new(trailing_zeros as usize))
     }
 }
 
@@ -253,8 +247,8 @@ impl Iterator for BitBoardIter {
 /// # use chess_engine::{BitBoard, Square, File, Rank};
 /// let bitboard = BitBoard(0x000000000000FF00);
 /// let mut iter = bitboard.into_iter();
-/// assert_eq!(iter.next(), Some(Square::new(File::A, Rank::Two)));
-/// assert_eq!(iter.next(), Some(Square::new(File::B, Rank::Two)));
+/// assert_eq!(iter.next(), Some(Square::A2));
+/// assert_eq!(iter.next(), Some(Square::B2));
 /// ```
 impl IntoIterator for BitBoard {
     type Item = Square;

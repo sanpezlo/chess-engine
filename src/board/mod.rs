@@ -182,10 +182,6 @@ impl Board {
 
     /// Puts a [`Piece`] on a [`Square`] on the board.
     ///
-    /// # Panics
-    ///
-    /// Panics if the [`Square`] is not a legal square.
-    ///
     /// # Examples
     ///
     /// ```
@@ -194,8 +190,6 @@ impl Board {
     /// board.put_piece("R".parse().unwrap(), "a1".parse().unwrap());
     /// ```
     pub fn put_piece(&mut self, piece: Piece, square: Square) {
-        assert!(square.is_valid());
-
         let piece_type = piece.piece_type() as usize;
         let color = piece.color() as usize;
 
