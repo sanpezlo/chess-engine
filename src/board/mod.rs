@@ -2,6 +2,7 @@
 
 mod board_builder;
 mod castle_rights;
+mod castle_rights_type;
 mod draw;
 pub mod fen;
 mod state;
@@ -10,6 +11,7 @@ mod zobrist;
 use crate::{BitBoard, Color, Piece, PieceType, Square};
 pub use board_builder::*;
 pub use castle_rights::*;
+pub use castle_rights_type::*;
 pub use state::*;
 pub use zobrist::*;
 

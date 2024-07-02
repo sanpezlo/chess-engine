@@ -3,7 +3,7 @@
 mod bitboard;
 mod color;
 mod file;
-mod macros;
+pub(crate) mod macros;
 mod piece;
 mod piece_type;
 mod rank;

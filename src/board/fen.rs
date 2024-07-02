@@ -19,7 +19,7 @@
 //! assert_eq!(board.to_string(), fen_str);
 //! ```
 
-use super::{BoardBuilder, CastleRightsError};
+use super::{BoardBuilder, CastleRightsTypeError};
 use crate::{
     Color, ColorError, File, Piece, PieceType, PieceTypeError, Rank, Square, SquareError, State,
 };
@@ -73,7 +73,7 @@ pub enum FenError {
 
     /// Invalid castle rights
     #[error("{0}")]
-    CastleRights(#[from] CastleRightsError),
+    CastleRights(#[from] CastleRightsTypeError),
 
     /// Invalid square
     #[error("{0}")]

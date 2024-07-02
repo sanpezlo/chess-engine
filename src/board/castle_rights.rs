@@ -1,119 +1,56 @@
-use crate::Color;
+use crate::{CastleRightsType, CastleRightsTypeError, Color};
 use std::{fmt, str::FromStr};
-use thiserror::Error;
-
-/// The number of castle rights types in chess.
-pub const CASTLE_RIGHTS_TYPES: usize = 4;
-
-/// A `CastleRightsType` in chess.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum CastleRightsType {
-    /// No castle rights.
-    None,
-    /// King side castle rights.
-    KingSide,
-    /// Queen side castle rights.
-    QueenSide,
-    /// Both king and queen side castle rights.
-    Both,
-}
-
-impl CastleRightsType {
-    /// Creates a new `CastleRightsType` from a `u8`.
-    ///
-    /// # Panics
-    ///
-    /// Panics if the castle rights type is not 0-3.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// # use chess_engine::CastleRightsType;
-    /// let castle_rights_type = CastleRightsType::new(0);
-    /// assert_eq!(castle_rights_type, CastleRightsType::None);
-    /// ```
-    pub fn new(castle_rights_type: u8) -> Self {
-        match castle_rights_type {
-            0 => CastleRightsType::None,
-            1 => CastleRightsType::KingSide,
-            2 => CastleRightsType::QueenSide,
-            3 => CastleRightsType::Both,
-            _ => unreachable!(),
-        }
-    }
-}
-
-/// An error that can occur when parsing [`CastleRights`].
-#[derive(Error, Debug)]
-pub enum CastleRightsError {
-    /// The castle rights are not valid.
-    #[error("invalid castle rights (expected K, Q, k, or q, got {0})")]
-    Invalid(String),
-}
 
 /// A `CastleRights` in chess.
 ///
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{CastleRights, CastleRightsType};
-/// let castle_rights = CastleRights([CastleRightsType::Both; 2]);
+/// # use chess_engine::{CastleRights, CastleRightsType, Color};
+/// let castle_rights = CastleRights([CastleRightsType::Both; Color::LEN]);
 /// assert_ne!(castle_rights, CastleRights::default());
 /// ```
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct CastleRights(pub [CastleRightsType; 2]);
+pub struct CastleRights(pub [CastleRightsType; Color::LEN]);
 
 /// Parses a `CastleRights` from a string.
 ///
 /// # Errors
 ///
-/// Returns a [`CastleRightsError`] if the string is not a valid castle rights.
+/// Returns a [`CastleRightsTypeError`] if the string is not a valid castle rights.
 ///
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{CastleRights, CastleRightsType};
+/// # use chess_engine::{CastleRights, CastleRightsType, Color};
 /// let castle_rights: CastleRights = "KQkq".parse().unwrap();
-/// assert_eq!(castle_rights, CastleRights([CastleRightsType::Both; 2]));
+/// assert_eq!(castle_rights, CastleRights([CastleRightsType::Both; Color::LEN]));
 /// ```
 impl FromStr for CastleRights {
-    type Err = CastleRightsError;
+    type Err = CastleRightsTypeError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut castle_rights = CastleRights::default().0;
 
-        let (mut white, mut black) = (0, 0);
+        if s.len() > 4 || s.len() == 0 {
+            return Err(CastleRightsTypeError(s.to_string()));
+        }
 
-        for castle_rights_type in s.chars() {
-            match castle_rights_type {
-                '-' => {
-                    if s.len() != 1 {
-                        return Err(CastleRightsError::Invalid(s.to_string()));
-                    }
-                }
-                'K' => {
-                    white += CastleRightsType::KingSide as u8;
-                }
-                'Q' => {
-                    white += CastleRightsType::QueenSide as u8;
-                }
-                'k' => {
-                    black += CastleRightsType::KingSide as u8;
-                }
-                'q' => {
-                    black += CastleRightsType::QueenSide as u8;
-                }
+        if s == "-" {
+            return Ok(CastleRights::default());
+        }
 
-                _ => return Err(CastleRightsError::Invalid(castle_rights_type.to_string())),
+        for c in s.chars() {
+            let lowercase = c.to_lowercase().next().unwrap();
+
+            let castle_rights_type = CastleRightsType::from_str(&lowercase.to_string())?;
+
+            if lowercase == c {
+                castle_rights[Color::White as usize].try_bitor_assign(castle_rights_type)?;
+            } else {
+                castle_rights[Color::Black as usize].try_bitor_assign(castle_rights_type)?;
             }
         }
-
-        if white > 3 || black > 3 {
-            return Err(CastleRightsError::Invalid(s.to_string()));
-        }
-
-        castle_rights[Color::White as usize] = CastleRightsType::new(white);
-        castle_rights[Color::Black as usize] = CastleRightsType::new(black);
 
         Ok(CastleRights(castle_rights))
     }
@@ -124,33 +61,19 @@ impl FromStr for CastleRights {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{CastleRights, CastleRightsType};
-/// let castle_rights = CastleRights([CastleRightsType::None; 2]);
+/// # use chess_engine::{CastleRights, CastleRightsType, Color};
+/// let castle_rights = CastleRights([CastleRightsType::None; Color::LEN]);
 /// assert_eq!(castle_rights.to_string(), "-");
 /// ```
 impl fmt::Display for CastleRights {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut s = String::new();
 
-        let white = self.0[Color::White as usize] as u8;
+        let white = self.0[Color::White as usize] as usize;
+        let black = self.0[Color::Black as usize] as usize;
 
-        if white & CastleRightsType::KingSide as u8 != 0 {
-            s.push('K');
-        }
-
-        if white & CastleRightsType::QueenSide as u8 != 0 {
-            s.push('Q');
-        }
-
-        let black = self.0[Color::Black as usize] as u8;
-
-        if black & CastleRightsType::KingSide as u8 != 0 {
-            s.push('k');
-        }
-
-        if black & CastleRightsType::QueenSide as u8 != 0 {
-            s.push('q');
-        }
+        s.push_str(&CastleRightsType::new(white).to_string().to_uppercase());
+        s.push_str(&CastleRightsType::new(black).to_string());
 
         if s.is_empty() {
             s.push('-');
@@ -170,6 +93,6 @@ impl fmt::Display for CastleRights {
 /// assert_eq!(castle_rights, CastleRights([CastleRightsType::None; 2]));
 impl Default for CastleRights {
     fn default() -> Self {
-        CastleRights([CastleRightsType::None; 2])
+        CastleRights([CastleRightsType::None; Color::LEN])
     }
 }

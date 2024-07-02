@@ -1,7 +1,7 @@
 use once_cell::sync::Lazy;
 use rand::prelude::*;
 
-use crate::{CastleRightsType, Color, File, Piece, PieceType, Rank, Square, CASTLE_RIGHTS_TYPES};
+use crate::{CastleRightsType, Color, File, Piece, PieceType, Rank, Square};
 
 /// A lazy static [`Zobrist`] instance.
 pub static ZOBRIST: Lazy<Zobrist> = Lazy::new(|| Zobrist::new());
@@ -19,7 +19,7 @@ pub struct Zobrist {
     color: u64,
     pieces: [[[u64; PieceType::LEN]; Color::LEN]; Square::LEN],
     en_passant: [[u64; File::LEN]; Color::LEN],
-    castling_rights: [[u64; CASTLE_RIGHTS_TYPES]; Color::LEN],
+    castling_rights: [[u64; CastleRightsType::LEN]; Color::LEN],
 }
 
 impl Zobrist {
@@ -52,7 +52,7 @@ impl Zobrist {
         }
 
         for color in 0..Color::LEN {
-            for castle_rights in 0..CASTLE_RIGHTS_TYPES {
+            for castle_rights in 0..CastleRightsType::LEN {
                 zobrist.castling_rights[color][castle_rights] = rng.gen();
             }
         }
@@ -132,7 +132,7 @@ impl Default for Zobrist {
             color: 0,
             pieces: [[[0; PieceType::LEN]; Color::LEN]; Square::LEN],
             en_passant: [[0; File::LEN]; Color::LEN],
-            castling_rights: [[0; CASTLE_RIGHTS_TYPES]; Color::LEN],
+            castling_rights: [[0; CastleRightsType::LEN]; Color::LEN],
         }
     }
 }
