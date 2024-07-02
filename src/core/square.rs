@@ -89,7 +89,7 @@ impl Square {
     pub fn rank(self) -> Rank {
         assert!(self.is_valid());
 
-        Rank::new(self.0 / 8)
+        Rank::new((self.0 / 8) as usize)
     }
 
     /// Returns the [`Color`] of the `Square`.

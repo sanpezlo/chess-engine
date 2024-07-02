@@ -1,4 +1,4 @@
-use crate::{File, Rank, Square, FILES, RANKS};
+use crate::{File, Rank, Square, FILES};
 use std::{
     fmt,
     ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not},
@@ -187,7 +187,7 @@ impl fmt::Display for BitBoard {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut s = String::from("\n");
 
-        for rank in (0..RANKS as u8).rev() {
+        for rank in (0..Rank::LEN).rev() {
             let rank = Rank::new(rank);
             s.push_str(&format!("  {} ", rank));
 

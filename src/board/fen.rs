@@ -22,7 +22,7 @@
 use super::{BoardBuilder, CastleRightsError};
 use crate::{
     Color, File, Piece, PieceError, PieceType, Player, PlayerError, Rank, Square, SquareError,
-    FILES, MAX_HALFMOVE_CLOCK, MAX_PAWNS_PER_PLAYER, MAX_PIECES_PER_PLAYER, RANKS, SQUARES,
+    FILES, MAX_HALFMOVE_CLOCK, MAX_PAWNS_PER_PLAYER, MAX_PIECES_PER_PLAYER, SQUARES,
 };
 use std::{fmt, str::FromStr};
 use thiserror::Error;
@@ -201,7 +201,7 @@ fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; SQUARES], FenE
 
     let ranks: Vec<&str> = piece_section.split('/').collect();
 
-    if ranks.len() != RANKS {
+    if ranks.len() != Rank::LEN {
         return Err(FenError::Ranks(ranks.len()));
     }
 
@@ -237,8 +237,8 @@ fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; SQUARES], FenE
                 }
             }
 
-            pieces[Square::new(File::new(file_index as u8), Rank::new(rank_index as u8)).0
-                as usize] = Some(piece);
+            pieces[Square::new(File::new(file_index as u8), Rank::new(rank_index)).0 as usize] =
+                Some(piece);
             file_index += 1;
         }
 
@@ -295,7 +295,7 @@ impl fmt::Display for BoardBuilder {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut s = String::new();
 
-        for rank in (0..RANKS as u8).rev() {
+        for rank in (0..Rank::LEN).rev() {
             let mut empty = 0;
 
             for file in 0..FILES as u8 {
