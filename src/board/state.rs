@@ -1,4 +1,4 @@
-use crate::{CastleRights, Color, Player, Rank, Square, PLAYERS, ZOBRIST};
+use crate::{CastleRights, Color, Rank, Square, ZOBRIST};
 
 /// Maximum number of halfmoves before a draw.
 pub const MAX_HALFMOVE_CLOCK: u8 = 100;
@@ -8,13 +8,13 @@ pub const MAX_HALFMOVE_CLOCK: u8 = 100;
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{State, CastleRights, Player, Color};
+/// # use chess_engine::{State, CastleRights, Color};
 /// let state = State::default();
-/// assert_eq!(state.player(), Player(Color::White));
+/// assert_eq!(state.color(), Color::White);
 /// ```
 #[derive(Clone, Copy, Debug)]
 pub struct State {
-    player: Player,
+    color: Color,
     castling_rights: CastleRights,
     en_passant_square: Option<Square>,
     halfmove_clock: u8,
@@ -24,17 +24,17 @@ pub struct State {
 
 /// Getters and setters for the `State` struct.
 impl State {
-    /// Returns the [`Player`] to move.
+    /// Returns the [`Color`] to move.
     ///
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State, Player, Color};
+    /// # use chess_engine::{State, Color};
     /// let state = State::default();
-    /// assert_eq!(state.player(), Player(Color::White));
+    /// assert_eq!(state.color(), Color::White);
     /// ```
-    pub fn player(&self) -> Player {
-        self.player
+    pub fn color(&self) -> Color {
+        self.color
     }
 
     /// Returns the [`CastleRights`].
@@ -99,7 +99,7 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State, Player, Color};
+    /// # use chess_engine::{State, Color};
     /// let state = State::default();
     /// let hash = state.hash();
     /// assert_eq!(hash, 0);
@@ -108,18 +108,18 @@ impl State {
         self.hash
     }
 
-    /// Sets the player to move.
+    /// Sets the color to move.
     ///
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State, Player, Color};
+    /// # use chess_engine::{State, Color};
     /// let mut state = State::default();
-    /// state.set_player(Player(Color::Black));
-    /// assert_eq!(state.player(), Player(Color::Black));
+    /// state.set_color(Color::Black);
+    /// assert_eq!(state.color(), Color::Black);
     /// ```
-    pub fn set_player(&mut self, player: Player) {
-        self.player = player;
+    pub fn set_color(&mut self, color: Color) {
+        self.color = color;
     }
 
     /// Sets the castling rights.
@@ -210,23 +210,23 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{CastleRights, Player, State, Color};
+    /// # use chess_engine::{CastleRights, State, Color};
     /// let state = State::new(
-    ///     Player(Color::White),
+    ///     Color::White,
     ///     CastleRights::default(),
     ///     None,
     ///     0,
     ///     1
     ///  );
     pub fn new(
-        player: Player,
+        color: Color,
         castling_rights: CastleRights,
         en_passant_square: Option<Square>,
         halfmove_clock: u8,
         fullmove_counter: u16,
     ) -> Self {
         Self {
-            player,
+            color,
             castling_rights,
             en_passant_square,
             halfmove_clock,
@@ -242,22 +242,19 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State, Player, Color, ZOBRIST};
+    /// # use chess_engine::{State, Color, ZOBRIST};
     /// let state = State::default();
     /// let hash = state.partial_hash();
     /// ```
     pub fn partial_hash(&self) -> u64 {
         let mut hash: u64 = 0;
 
-        if self.player == Player(Color::White) {
-            hash ^= ZOBRIST.player()
+        if self.color == Color::White {
+            hash ^= ZOBRIST.color()
         }
 
-        for player_color in 0..PLAYERS {
-            hash ^= ZOBRIST.castling_rights(
-                Color::new(player_color),
-                self.castling_rights.0[player_color],
-            );
+        for color in 0..Color::LEN {
+            hash ^= ZOBRIST.castling_rights(Color::new(color), self.castling_rights.0[color]);
         }
 
         if let Some(en_passant_square) = self.en_passant_square {
@@ -281,7 +278,7 @@ impl State {
 impl Default for State {
     fn default() -> Self {
         Self {
-            player: Player::default(),
+            color: Color::default(),
             castling_rights: CastleRights::default(),
             en_passant_square: None,
             halfmove_clock: 0,

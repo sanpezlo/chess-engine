@@ -1,12 +1,12 @@
-use crate::{Color, Player};
+use crate::Color;
 use std::{fmt, str::FromStr};
 use thiserror::Error;
 
-/// The maximum number of pieces per player in chess.
-pub const MAX_PIECES_PER_PLAYER: usize = 16;
+/// The maximum number of pieces per color in chess.
+pub const MAX_PIECES_PER_COLOR: usize = 16;
 
-/// The maximum number of pawns per player in chess.
-pub const MAX_PAWNS_PER_PLAYER: usize = 8;
+/// The maximum number of pawns per color in chess.
+pub const MAX_PAWNS_PER_COLOR: usize = 8;
 
 /// The number of piece types in chess.
 pub const PIECE_TYPES: usize = 6;
@@ -65,35 +65,35 @@ pub enum PieceError {
 
 /// A `Piece` in chess.
 ///
-/// A `Piece` is represented by a [`PieceType`] and a [`Player`].
+/// A `Piece` is represented by a [`PieceType`] and a [`Color`].
 ///
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{Piece, PieceType, Player, Color};
-/// let piece = Piece::new(PieceType::Pawn, Player(Color::White));
+/// # use chess_engine::{Piece, PieceType, Color};
+/// let piece = Piece::new(PieceType::Pawn, Color::White);
 /// assert_eq!(piece.piece_type(), PieceType::Pawn);
-/// assert_eq!(piece.player(), Player(Color::White));
+/// assert_eq!(piece.color(), Color::White);
 /// ```
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Piece {
     piece_type: PieceType,
-    player: Player,
+    color: Color,
 }
 
 impl Piece {
-    /// Creates a new `Piece` from a [`PieceType`] and a [`Player`].
+    /// Creates a new `Piece` from a [`PieceType`] and a [`Color`].
     ///
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Piece, PieceType, Player, Color};
-    /// let piece = Piece::new(PieceType::Pawn, Player(Color::White));
+    /// # use chess_engine::{Piece, PieceType, Color};
+    /// let piece = Piece::new(PieceType::Pawn, Color::White);
     /// assert_eq!(piece.piece_type(), PieceType::Pawn);
-    /// assert_eq!(piece.player(), Player(Color::White));
+    /// assert_eq!(piece.color(), Color::White);
     /// ```
-    pub fn new(piece_type: PieceType, player: Player) -> Self {
-        Piece { piece_type, player }
+    pub fn new(piece_type: PieceType, color: Color) -> Self {
+        Piece { piece_type, color }
     }
 
     /// Returns the [`PieceType`] of the `Piece`.
@@ -101,25 +101,25 @@ impl Piece {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Piece, PieceType, Player, Color};
-    /// let piece = Piece::new(PieceType::Pawn, Player(Color::White));
+    /// # use chess_engine::{Piece, PieceType, Color};
+    /// let piece = Piece::new(PieceType::Pawn, Color::White);
     /// assert_eq!(piece.piece_type(), PieceType::Pawn);
     /// ```
     pub fn piece_type(&self) -> PieceType {
         self.piece_type
     }
 
-    /// Returns the [`Player`] of the `Piece`.
+    /// Returns the [`Color`] of the `Piece`.
     ///
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Piece, PieceType, Player, Color};
-    /// let piece = Piece::new(PieceType::Pawn, Player(Color::White));
-    /// assert_eq!(piece.player(), Player(Color::White));
+    /// # use chess_engine::{Piece, PieceType, Color};
+    /// let piece = Piece::new(PieceType::Pawn, Color::White);
+    /// assert_eq!(piece.color(), Color::White);
     /// ```
-    pub fn player(&self) -> Player {
-        self.player
+    pub fn color(&self) -> Color {
+        self.color
     }
 }
 
@@ -132,9 +132,9 @@ impl Piece {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{Piece, PieceType, Player, Color};
+/// # use chess_engine::{Piece, PieceType, Color};
 /// let piece: Piece = "P".parse().unwrap();
-/// assert_eq!(piece, Piece::new(PieceType::Pawn, Player(Color::White)));
+/// assert_eq!(piece, Piece::new(PieceType::Pawn, Color::White));
 /// ```
 impl FromStr for Piece {
     type Err = PieceError;
@@ -142,23 +142,23 @@ impl FromStr for Piece {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let mut chars = s.chars();
 
-        let (piece_type, player) = match chars.next() {
-            Some('P') => (PieceType::Pawn, Player(Color::White)),
-            Some('N') => (PieceType::Knight, Player(Color::White)),
-            Some('B') => (PieceType::Bishop, Player(Color::White)),
-            Some('R') => (PieceType::Rook, Player(Color::White)),
-            Some('Q') => (PieceType::Queen, Player(Color::White)),
-            Some('K') => (PieceType::King, Player(Color::White)),
-            Some('p') => (PieceType::Pawn, Player(Color::Black)),
-            Some('n') => (PieceType::Knight, Player(Color::Black)),
-            Some('b') => (PieceType::Bishop, Player(Color::Black)),
-            Some('r') => (PieceType::Rook, Player(Color::Black)),
-            Some('q') => (PieceType::Queen, Player(Color::Black)),
-            Some('k') => (PieceType::King, Player(Color::Black)),
+        let (piece_type, color) = match chars.next() {
+            Some('P') => (PieceType::Pawn, Color::White),
+            Some('N') => (PieceType::Knight, Color::White),
+            Some('B') => (PieceType::Bishop, Color::White),
+            Some('R') => (PieceType::Rook, Color::White),
+            Some('Q') => (PieceType::Queen, Color::White),
+            Some('K') => (PieceType::King, Color::White),
+            Some('p') => (PieceType::Pawn, Color::Black),
+            Some('n') => (PieceType::Knight, Color::Black),
+            Some('b') => (PieceType::Bishop, Color::Black),
+            Some('r') => (PieceType::Rook, Color::Black),
+            Some('q') => (PieceType::Queen, Color::Black),
+            Some('k') => (PieceType::King, Color::Black),
             _ => return Err(PieceError::Invalid(s.to_string())),
         };
 
-        Ok(Piece::new(piece_type, player))
+        Ok(Piece::new(piece_type, color))
     }
 }
 
@@ -167,8 +167,8 @@ impl FromStr for Piece {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{Piece, PieceType, Player, Color};
-/// let piece = Piece::new(PieceType::Pawn, Player(Color::Black));
+/// # use chess_engine::{Piece, PieceType, Color};
+/// let piece = Piece::new(PieceType::Pawn, Color::Black);
 /// assert_eq!(piece.to_string(), "p");
 /// ```
 impl fmt::Display for Piece {
@@ -182,7 +182,7 @@ impl fmt::Display for Piece {
             PieceType::King => "k",
         };
 
-        if self.player == Player(Color::White) {
+        if self.color == Color::White {
             write!(f, "{}", piece_type.to_uppercase())
         } else {
             write!(f, "{}", piece_type)

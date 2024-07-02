@@ -17,3 +17,17 @@ enum_str!(
         Black = "b"
     }
 );
+
+/// The default `Color` is `Color::White`.
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::Color;
+/// assert_eq!(Color::default(), Color::White);
+/// ```
+impl Default for Color {
+    fn default() -> Self {
+        Color::White
+    }
+}

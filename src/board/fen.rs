@@ -21,8 +21,8 @@
 
 use super::{BoardBuilder, CastleRightsError};
 use crate::{
-    Color, File, Piece, PieceError, PieceType, Player, PlayerError, Rank, Square, SquareError,
-    MAX_HALFMOVE_CLOCK, MAX_PAWNS_PER_PLAYER, MAX_PIECES_PER_PLAYER, SQUARES,
+    Color, ColorError, File, Piece, PieceError, PieceType, Rank, Square, SquareError,
+    MAX_HALFMOVE_CLOCK, MAX_PAWNS_PER_COLOR, MAX_PIECES_PER_COLOR, SQUARES,
 };
 use std::{fmt, str::FromStr};
 use thiserror::Error;
@@ -50,27 +50,27 @@ pub enum FenError {
     #[error("pawns cannot be on the first or last rank")]
     PawnOnFirstOrLastRank,
 
-    /// Player has too many pawns
-    #[error("player {player} has too many pawns (expected 8 or fewer, got {num_pawns})")]
+    /// Color has too many pawns
+    #[error("color {color} has too many pawns (expected 8 or fewer, got {num_pawns})")]
     ToManyPawns {
-        /// [`Player`] with too many pawns
-        player: Player,
+        /// [`Color`] with too many pawns
+        color: Color,
         /// Number of pawns
         num_pawns: u8,
     },
 
-    /// Player has too many pieces
-    #[error("player {player} has too many pieces (expected 16 or fewer, got {num_pieces})")]
+    /// Color has too many pieces
+    #[error("color {color} has too many pieces (expected 16 or fewer, got {num_pieces})")]
     ToManyPieces {
-        /// [`Player`] with too many pieces
-        player: Player,
+        /// [`Color`] with too many pieces
+        color: Color,
         /// Number of pieces
         num_pieces: u8,
     },
 
-    /// Invalid player
+    /// Invalid color
     #[error("{0}")]
-    Player(#[from] PlayerError),
+    Color(#[from] ColorError),
 
     /// Invalid castle rights
     #[error("{0}")]
@@ -121,7 +121,7 @@ impl FromStr for BoardBuilder {
 
         board_builder.pieces(pieces);
 
-        board_builder.player(fen[1].parse()?);
+        board_builder.color(fen[1].parse()?);
 
         board_builder.castling_rights(fen[2].parse()?);
 
@@ -219,7 +219,7 @@ fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; SQUARES], FenE
 
             let piece: Piece = file.to_string().as_str().parse()?;
 
-            if piece.player() == Player(Color::White) {
+            if piece.color() == Color::White {
                 num_white_pieces += 1;
             } else {
                 num_black_pieces += 1;
@@ -230,7 +230,7 @@ fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; SQUARES], FenE
                     return Err(FenError::PawnOnFirstOrLastRank);
                 }
 
-                if piece.player() == Player(Color::White) {
+                if piece.color() == Color::White {
                     num_white_pawns += 1;
                 } else {
                     num_black_pawns += 1;
@@ -247,30 +247,30 @@ fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; SQUARES], FenE
         }
     }
 
-    if num_white_pieces > MAX_PIECES_PER_PLAYER {
+    if num_white_pieces > MAX_PIECES_PER_COLOR {
         return Err(FenError::ToManyPieces {
-            player: Player(Color::White),
+            color: Color::White,
             num_pieces: num_white_pieces as u8,
         });
     }
 
-    if num_black_pieces > MAX_PIECES_PER_PLAYER {
+    if num_black_pieces > MAX_PIECES_PER_COLOR {
         return Err(FenError::ToManyPieces {
-            player: Player(Color::Black),
+            color: Color::Black,
             num_pieces: num_black_pieces as u8,
         });
     }
 
-    if num_white_pawns > MAX_PAWNS_PER_PLAYER {
+    if num_white_pawns > MAX_PAWNS_PER_COLOR {
         return Err(FenError::ToManyPawns {
-            player: Player(Color::White),
+            color: Color::White,
             num_pawns: num_white_pawns as u8,
         });
     }
 
-    if num_black_pawns > MAX_PAWNS_PER_PLAYER {
+    if num_black_pawns > MAX_PAWNS_PER_COLOR {
         return Err(FenError::ToManyPawns {
-            player: Player(Color::Black),
+            color: Color::Black,
             num_pawns: num_black_pawns as u8,
         });
     }
@@ -326,7 +326,7 @@ impl fmt::Display for BoardBuilder {
             f,
             "{} {} {} {} {} {}",
             s,
-            self.state.player(),
+            self.state.color(),
             self.state.castling_rights(),
             self.state
                 .en_passant_square()

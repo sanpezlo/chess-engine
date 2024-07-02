@@ -1,5 +1,5 @@
 use super::{Board, CastleRights};
-use crate::{Piece, Player, Square, State, AVERAGE_MOVES, SQUARES};
+use crate::{Color, Piece, Square, State, AVERAGE_MOVES, SQUARES};
 
 /// A builder for creating a [`Board`].
 ///
@@ -11,7 +11,7 @@ use crate::{Piece, Player, Square, State, AVERAGE_MOVES, SQUARES};
 ///
 /// builder.put_piece("R".parse().unwrap(), "a1".parse().unwrap());
 /// builder.put_piece("r".parse().unwrap(), "h8".parse().unwrap());
-/// builder.player("b".parse().unwrap());
+/// builder.color("b".parse().unwrap());
 ///
 /// let board = builder.build();
 /// ```
@@ -74,17 +74,17 @@ impl BoardBuilder {
         self
     }
 
-    /// Sets the player to move.
+    /// Sets the color to move.
     ///
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BoardBuilder, Player};
+    /// # use chess_engine::{BoardBuilder, Color};
     /// let mut builder = BoardBuilder::new();
-    /// builder.player("b".parse().unwrap());
+    /// builder.color("b".parse().unwrap());
     /// ```
-    pub fn player(&mut self, player: Player) -> &mut BoardBuilder {
-        self.state.set_player(player);
+    pub fn color(&mut self, color: Color) -> &mut BoardBuilder {
+        self.state.set_color(color);
         self
     }
 
@@ -156,15 +156,15 @@ impl BoardBuilder {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BoardBuilder, Player, CastleRights};
+    /// # use chess_engine::{BoardBuilder, Color, CastleRights};
     /// let mut builder = BoardBuilder::new();
-    /// builder.player("b".parse().unwrap());
+    /// builder.color("b".parse().unwrap());
     /// builder.castling_rights(CastleRights::default());
     /// let board = builder.build();
     pub fn build(self) -> Board {
         let mut board = Board {
             piece_types_bitboards: Default::default(),
-            player_bitboards: Default::default(),
+            color_bitboards: Default::default(),
             state: self.state,
             history: Vec::with_capacity(AVERAGE_MOVES),
         };

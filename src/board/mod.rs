@@ -7,7 +7,7 @@ pub mod fen;
 mod state;
 mod zobrist;
 
-use crate::{BitBoard, Color, Piece, PieceType, Player, Square, PIECE_TYPES, PLAYERS};
+use crate::{BitBoard, Color, Piece, PieceType, Square, PIECE_TYPES};
 pub use board_builder::*;
 pub use castle_rights::*;
 pub use state::*;
@@ -30,7 +30,7 @@ pub const AVERAGE_MOVES: usize = 79;
 #[derive(Clone, Debug)]
 pub struct Board {
     piece_types_bitboards: [BitBoard; PIECE_TYPES],
-    player_bitboards: [BitBoard; PLAYERS],
+    color_bitboards: [BitBoard; Color::LEN],
     state: State,
     history: Vec<State>,
 }
@@ -53,7 +53,7 @@ impl Board {
         self.piece_types_bitboards[piece_type as usize]
     }
 
-    /// Returns the [`BitBoard`] for a specific [`Player`].
+    /// Returns the [`BitBoard`] for a specific [`Color`].
     ///
     /// # Examples
     ///
@@ -61,11 +61,11 @@ impl Board {
     /// # use chess_engine::{Board, BitBoard, Color};
     /// let board = Board::default();
     /// assert_eq!(
-    ///     board.player_bitboard(Color::White),
+    ///     board.color_bitboard(Color::White),
     ///     BitBoard(0x000000000000FFFF)
     /// );
-    pub fn player_bitboard(&self, color: Color) -> BitBoard {
-        self.player_bitboards[color as usize]
+    pub fn color_bitboard(&self, color: Color) -> BitBoard {
+        self.color_bitboards[color as usize]
     }
 
     /// Returns the [`BitBoard`] for a specific [`Piece`].
@@ -73,27 +73,27 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Board, BitBoard, Piece, Color, PieceType, Player};
+    /// # use chess_engine::{Board, BitBoard, Piece, Color, PieceType};
     /// let board = Board::default();
-    /// let piece = Piece::new(PieceType::Pawn, Player(Color::White));
+    /// let piece = Piece::new(PieceType::Pawn, Color::White);
     /// assert_eq!(board.piece_bitboard(piece), BitBoard(0x000000000000FF00));
     /// ```
     pub fn piece_bitboard(&self, piece: Piece) -> BitBoard {
         self.piece_types_bitboards[piece.piece_type() as usize]
-            & self.player_bitboards[piece.player().0 as usize]
+            & self.color_bitboards[piece.color() as usize]
     }
 
-    /// Returns the [`Player`] to move.
+    /// Returns the [`Color`] to move.
     ///
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Board, Player, Color};
+    /// # use chess_engine::{Board, Color};
     /// let board = Board::default();
-    /// assert_eq!(board.player(), Player(Color::White));
+    /// assert_eq!(board.color(), Color::White);
     /// ```
-    pub fn player(&self) -> Player {
-        self.state.player()
+    pub fn color(&self) -> Color {
+        self.state.color()
     }
 
     /// Returns the [`CastleRights`] for the board.
@@ -197,10 +197,10 @@ impl Board {
         assert!(square.is_valid());
 
         let piece_type = piece.piece_type() as usize;
-        let player = piece.player().0 as usize;
+        let color = piece.color() as usize;
 
         self.piece_types_bitboards[piece_type] |= square.into();
-        self.player_bitboards[player] |= square.into();
+        self.color_bitboards[color] |= square.into();
     }
 
     /// Returns the hash of the board.
@@ -217,8 +217,8 @@ impl Board {
 
         for piece_type in 0..PIECE_TYPES {
             let piece_type = PieceType::new(piece_type as u8);
-            for color in 0..PLAYERS {
-                let piece = Piece::new(piece_type, Player(Color::new(color)));
+            for color in 0..Color::LEN {
+                let piece = Piece::new(piece_type, Color::new(color));
 
                 for square in self.piece_bitboard(piece) {
                     hash ^= ZOBRIST.piece(square, piece);
@@ -237,9 +237,9 @@ impl Board {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{Board, Player, Color};
+/// # use chess_engine::{Board, Color};
 /// let board = Board::default();
-/// assert_eq!(board.player(), Player(Color::White));
+/// assert_eq!(board.color(), Color::White);
 /// ```
 impl Default for Board {
     fn default() -> Self {
@@ -252,9 +252,9 @@ impl Default for Board {
                 BitBoard(0x0800000000000008),
                 BitBoard(0x1000000000000010),
             ],
-            player_bitboards: [BitBoard(0x000000000000FFFF), BitBoard(0xFFFF000000000000)],
+            color_bitboards: [BitBoard(0x000000000000FFFF), BitBoard(0xFFFF000000000000)],
             state: State::new(
-                Player(Color::White),
+                Color::White,
                 CastleRights([CastleRightsType::Both; 2]),
                 None,
                 0,

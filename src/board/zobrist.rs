@@ -2,8 +2,7 @@ use once_cell::sync::Lazy;
 use rand::prelude::*;
 
 use crate::{
-    CastleRightsType, Color, File, Piece, Rank, Square, CASTLE_RIGHTS_TYPES, PIECE_TYPES, PLAYERS,
-    SQUARES,
+    CastleRightsType, Color, File, Piece, Rank, Square, CASTLE_RIGHTS_TYPES, PIECE_TYPES, SQUARES,
 };
 
 /// A lazy static [`Zobrist`] instance.
@@ -19,10 +18,10 @@ pub static ZOBRIST: Lazy<Zobrist> = Lazy::new(|| Zobrist::new());
 /// ```
 #[derive(Debug, Clone, Copy)]
 pub struct Zobrist {
-    player: u64,
-    pieces: [[[u64; PIECE_TYPES]; PLAYERS]; SQUARES],
-    en_passant: [[u64; File::LEN]; PLAYERS],
-    castling_rights: [[u64; CASTLE_RIGHTS_TYPES]; PLAYERS],
+    color: u64,
+    pieces: [[[u64; PIECE_TYPES]; Color::LEN]; SQUARES],
+    en_passant: [[u64; File::LEN]; Color::LEN],
+    castling_rights: [[u64; CASTLE_RIGHTS_TYPES]; Color::LEN],
 }
 
 impl Zobrist {
@@ -38,41 +37,41 @@ impl Zobrist {
         let mut rng = rand::thread_rng();
         let mut zobrist = Zobrist::default();
 
-        zobrist.player = rng.gen();
+        zobrist.color = rng.gen();
 
         for square in 0..SQUARES {
-            for player in 0..PLAYERS {
+            for color in 0..Color::LEN {
                 for piece_type in 0..PIECE_TYPES {
-                    zobrist.pieces[square][player][piece_type] = rng.gen();
+                    zobrist.pieces[square][color][piece_type] = rng.gen();
                 }
             }
         }
 
-        for player in 0..PLAYERS {
+        for color in 0..Color::LEN {
             for file in 0..File::LEN {
-                zobrist.en_passant[player][file] = rng.gen();
+                zobrist.en_passant[color][file] = rng.gen();
             }
         }
 
-        for player in 0..PLAYERS {
+        for color in 0..Color::LEN {
             for castle_rights in 0..CASTLE_RIGHTS_TYPES {
-                zobrist.castling_rights[player][castle_rights] = rng.gen();
+                zobrist.castling_rights[color][castle_rights] = rng.gen();
             }
         }
 
         zobrist
     }
 
-    /// Returns the hash for the player to move.
+    /// Returns the hash for the color to move.
     ///
     /// # Examples
     ///
     /// ```
     /// # use chess_engine::ZOBRIST;
-    /// let player = ZOBRIST.player();
+    /// let color = ZOBRIST.color();
     /// ```
-    pub fn player(&self) -> u64 {
-        self.player
+    pub fn color(&self) -> u64 {
+        self.color
     }
 
     /// Returns the hash for a [`Piece`] on a [`Square`].
@@ -84,15 +83,15 @@ impl Zobrist {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{ZOBRIST, Square, Piece, Color, PieceType, Player};
+    /// # use chess_engine::{ZOBRIST, Square, Piece, Color, PieceType};
     /// let square: Square = "a2".parse().unwrap();
-    /// let piece = Piece::new(PieceType::Pawn, Player(Color::White));
+    /// let piece = Piece::new(PieceType::Pawn, Color::White);
     /// let hash = ZOBRIST.piece(square, piece);
     /// ```
     pub fn piece(&self, square: Square, piece: Piece) -> u64 {
         assert!(square.is_valid());
 
-        self.pieces[square.0 as usize][piece.player().0 as usize][piece.piece_type() as usize]
+        self.pieces[square.0 as usize][piece.color() as usize][piece.piece_type() as usize]
     }
 
     /// Returns the hash for en passant on a [`Square`].
@@ -123,12 +122,8 @@ impl Zobrist {
     /// # use chess_engine::{ZOBRIST, Color, CastleRightsType};
     /// let hash = ZOBRIST.castling_rights(Color::White, CastleRightsType::Both);
     /// ```
-    pub fn castling_rights(
-        &self,
-        player_color: Color,
-        castle_rights_type: CastleRightsType,
-    ) -> u64 {
-        self.castling_rights[player_color as usize][castle_rights_type as usize]
+    pub fn castling_rights(&self, color: Color, castle_rights_type: CastleRightsType) -> u64 {
+        self.castling_rights[color as usize][castle_rights_type as usize]
     }
 }
 
@@ -141,15 +136,15 @@ impl Zobrist {
 /// ```
 /// # use chess_engine::Zobrist;
 /// let zobrist = Zobrist::default();
-/// assert_eq!(zobrist.player(), 0);
+/// assert_eq!(zobrist.color(), 0);
 /// ```
 impl Default for Zobrist {
     fn default() -> Self {
         Self {
-            player: 0,
-            pieces: [[[0; PIECE_TYPES]; PLAYERS]; SQUARES],
-            en_passant: [[0; File::LEN]; PLAYERS],
-            castling_rights: [[0; CASTLE_RIGHTS_TYPES]; PLAYERS],
+            color: 0,
+            pieces: [[[0; PIECE_TYPES]; Color::LEN]; SQUARES],
+            en_passant: [[0; File::LEN]; Color::LEN],
+            castling_rights: [[0; CASTLE_RIGHTS_TYPES]; Color::LEN],
         }
     }
 }

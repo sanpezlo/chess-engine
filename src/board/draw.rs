@@ -1,7 +1,7 @@
-use crate::{BitBoard, Board, Color, Piece, PieceType, Player, MAX_HALFMOVE_CLOCK, PLAYERS};
+use crate::{BitBoard, Board, Color, Piece, PieceType, MAX_HALFMOVE_CLOCK};
 
 impl Board {
-    /// Returns `true` if the [`Player`] has the bishop pair.
+    /// Returns `true` if the [`Color`] has the bishop pair.
     ///
     /// # Examples
     ///
@@ -11,7 +11,7 @@ impl Board {
     /// assert_eq!(board.has_bishop_pair(Color::White), true);
     /// ```
     pub fn has_bishop_pair(&self, color: Color) -> bool {
-        let bitboard = self.piece_bitboard(Piece::new(PieceType::Bishop, Player(color)));
+        let bitboard = self.piece_bitboard(Piece::new(PieceType::Bishop, color));
 
         let mut white_square = 0;
         let mut black_square = 0;
@@ -37,52 +37,32 @@ impl Board {
     /// assert_eq!(board.draw_by_insufficient_material(), false);
     /// ```
     pub fn draw_by_insufficient_material(&self) -> bool {
-        for player_color in 0..PLAYERS {
-            if self.piece_bitboard(Piece::new(
-                PieceType::Queen,
-                Player(Color::new(player_color)),
-            )) > BitBoard(0)
-            {
+        for color in 0..Color::LEN {
+            if self.piece_bitboard(Piece::new(PieceType::Queen, Color::new(color))) > BitBoard(0) {
                 return false;
             }
 
-            if self.piece_bitboard(Piece::new(
-                PieceType::Rook,
-                Player(Color::new(player_color)),
-            )) > BitBoard(0)
-            {
+            if self.piece_bitboard(Piece::new(PieceType::Rook, Color::new(color))) > BitBoard(0) {
                 return false;
             }
 
-            if self.piece_bitboard(Piece::new(
-                PieceType::Pawn,
-                Player(Color::new(player_color)),
-            )) > BitBoard(0)
-            {
+            if self.piece_bitboard(Piece::new(PieceType::Pawn, Color::new(color))) > BitBoard(0) {
                 return false;
             }
 
-            if self.has_bishop_pair(Color::new(player_color)) {
+            if self.has_bishop_pair(Color::new(color)) {
                 return false;
             }
 
-            if self.piece_bitboard(Piece::new(
-                PieceType::Bishop,
-                Player(Color::new(player_color)),
-            )) > BitBoard(0)
-                && self.piece_bitboard(Piece::new(
-                    PieceType::Knight,
-                    Player(Color::new(player_color)),
-                )) > BitBoard(0)
+            if self.piece_bitboard(Piece::new(PieceType::Bishop, Color::new(color))) > BitBoard(0)
+                && self.piece_bitboard(Piece::new(PieceType::Knight, Color::new(color)))
+                    > BitBoard(0)
             {
                 return false;
             }
 
             if self
-                .piece_bitboard(Piece::new(
-                    PieceType::Knight,
-                    Player(Color::new(player_color)),
-                ))
+                .piece_bitboard(Piece::new(PieceType::Knight, Color::new(color)))
                 .0
                 .count_ones()
                 >= 3
@@ -91,13 +71,13 @@ impl Board {
             }
         }
 
-        let w_bishops = self.piece_bitboard(Piece::new(PieceType::Bishop, Player(Color::White)));
+        let w_bishops = self.piece_bitboard(Piece::new(PieceType::Bishop, Color::White));
 
-        let w_knights = self.piece_bitboard(Piece::new(PieceType::Knight, Player(Color::White)));
+        let w_knights = self.piece_bitboard(Piece::new(PieceType::Knight, Color::White));
 
-        let b_bishops = self.piece_bitboard(Piece::new(PieceType::Bishop, Player(Color::Black)));
+        let b_bishops = self.piece_bitboard(Piece::new(PieceType::Bishop, Color::Black));
 
-        let b_knights = self.piece_bitboard(Piece::new(PieceType::Knight, Player(Color::Black)));
+        let b_knights = self.piece_bitboard(Piece::new(PieceType::Knight, Color::Black));
 
         if w_bishops.0.count_ones() != 0 && b_bishops.0.count_ones() != 0 {
             let mut w = false;
