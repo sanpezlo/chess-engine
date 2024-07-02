@@ -15,7 +15,7 @@ create_enum! {
         /// A Queen.
         Queen,
         /// A King.
-        King,
+        King
     }
 }
 

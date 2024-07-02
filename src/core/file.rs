@@ -19,7 +19,7 @@ create_enum! {
         /// The File G.
         G,
         /// The File H.
-        H,
+        H
     }
 }
 

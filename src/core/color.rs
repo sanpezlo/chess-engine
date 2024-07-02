@@ -7,7 +7,7 @@ create_enum! {
         /// The color white.
         White,
         /// The color black.
-        Black,
+        Black
     }
 }
 

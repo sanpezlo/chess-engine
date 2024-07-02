@@ -19,7 +19,7 @@ create_enum! {
         /// The Rank 7.
         Seven,
         /// The Rank 8.
-        Eight,
+        Eight
     }
 }
 

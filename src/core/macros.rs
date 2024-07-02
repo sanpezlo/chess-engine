@@ -5,8 +5,8 @@ macro_rules! create_enum {
         $vis:vis enum $name:ident {
             $(
                 $(#[$variant_attr:meta])*
-                $variant:ident,
-            )*
+                $variant:ident
+            ),*
         }
     ) => {
         $(#[$attr])*
