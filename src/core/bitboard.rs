@@ -1,4 +1,4 @@
-use crate::{File, Rank, Square, FILES};
+use crate::{File, Rank, Square};
 use std::{
     fmt,
     ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not},
@@ -191,7 +191,7 @@ impl fmt::Display for BitBoard {
             let rank = Rank::new(rank);
             s.push_str(&format!("  {} ", rank));
 
-            for file in 0..FILES as u8 {
+            for file in 0..File::LEN {
                 let file = File::new(file);
 
                 if BitBoard::from(Square::new(file, rank)).0 & self.0 != 0 {

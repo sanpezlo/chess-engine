@@ -2,7 +2,7 @@ use once_cell::sync::Lazy;
 use rand::prelude::*;
 
 use crate::{
-    CastleRightsType, Color, Piece, Rank, Square, CASTLE_RIGHTS_TYPES, FILES, PIECE_TYPES, PLAYERS,
+    CastleRightsType, Color, File, Piece, Rank, Square, CASTLE_RIGHTS_TYPES, PIECE_TYPES, PLAYERS,
     SQUARES,
 };
 
@@ -21,7 +21,7 @@ pub static ZOBRIST: Lazy<Zobrist> = Lazy::new(|| Zobrist::new());
 pub struct Zobrist {
     player: u64,
     pieces: [[[u64; PIECE_TYPES]; PLAYERS]; SQUARES],
-    en_passant: [[u64; FILES]; PLAYERS],
+    en_passant: [[u64; File::LEN]; PLAYERS],
     castling_rights: [[u64; CASTLE_RIGHTS_TYPES]; PLAYERS],
 }
 
@@ -49,7 +49,7 @@ impl Zobrist {
         }
 
         for player in 0..PLAYERS {
-            for file in 0..FILES {
+            for file in 0..File::LEN {
                 zobrist.en_passant[player][file] = rng.gen();
             }
         }
@@ -148,7 +148,7 @@ impl Default for Zobrist {
         Self {
             player: 0,
             pieces: [[[0; PIECE_TYPES]; PLAYERS]; SQUARES],
-            en_passant: [[0; FILES]; PLAYERS],
+            en_passant: [[0; File::LEN]; PLAYERS],
             castling_rights: [[0; CASTLE_RIGHTS_TYPES]; PLAYERS],
         }
     }

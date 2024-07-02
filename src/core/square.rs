@@ -71,7 +71,7 @@ impl Square {
     pub fn file(self) -> File {
         assert!(self.is_valid());
 
-        File::new(self.0 % 8)
+        File::new((self.0 % 8) as usize)
     }
 
     /// Returns the [`Rank`] of the `Square`.
