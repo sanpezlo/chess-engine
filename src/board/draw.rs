@@ -1,4 +1,4 @@
-use crate::{BitBoard, Board, Color, Piece, PieceType, MAX_HALFMOVE_CLOCK};
+use crate::{BitBoard, Board, Color, Piece, PieceType, State};
 
 impl Board {
     /// Returns `true` if the [`Color`] has the bishop pair.
@@ -120,7 +120,7 @@ impl Board {
     /// assert_eq!(board.draw_by_fifty_moves(), false);
     /// ```
     pub fn draw_by_fifty_moves(&self) -> bool {
-        self.halfmove_clock() >= MAX_HALFMOVE_CLOCK
+        self.halfmove_clock() >= State::MAX_HALFMOVE_CLOCK
     }
 
     /// Returns `true` if the game is a draw by threefold repetition.

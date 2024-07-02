@@ -1,8 +1,5 @@
 use crate::{CastleRights, Color, Rank, Square, ZOBRIST};
 
-/// Maximum number of halfmoves before a draw.
-pub const MAX_HALFMOVE_CLOCK: u8 = 100;
-
 /// Represents the state of the chessboard.
 ///
 /// # Examples
@@ -24,6 +21,9 @@ pub struct State {
 
 /// Getters and setters for the `State` struct.
 impl State {
+    /// Maximum number of halfmoves before a draw.
+    pub const MAX_HALFMOVE_CLOCK: u8 = 100;
+
     /// Returns the [`Color`] to move.
     ///
     /// # Examples

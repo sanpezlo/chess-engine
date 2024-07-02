@@ -7,14 +7,11 @@ pub mod fen;
 mod state;
 mod zobrist;
 
-use crate::{BitBoard, Color, Piece, PieceType, Square, PIECE_TYPES};
+use crate::{BitBoard, Color, Piece, PieceType, Square};
 pub use board_builder::*;
 pub use castle_rights::*;
 pub use state::*;
 pub use zobrist::*;
-
-/// Average number of moves in a game.
-pub const AVERAGE_MOVES: usize = 79;
 
 /// Chessboard representation.
 ///
@@ -29,7 +26,7 @@ pub const AVERAGE_MOVES: usize = 79;
 /// ```
 #[derive(Clone, Debug)]
 pub struct Board {
-    piece_types_bitboards: [BitBoard; PIECE_TYPES],
+    piece_types_bitboards: [BitBoard; PieceType::LEN],
     color_bitboards: [BitBoard; Color::LEN],
     state: State,
     history: Vec<State>,
@@ -37,6 +34,9 @@ pub struct Board {
 
 /// Getters for the `Board` struct.
 impl Board {
+    /// Average number of moves in a game.
+    pub const AVERAGE_MOVES: usize = 79;
+
     /// Returns the [`BitBoard`] for a specific [`PieceType`].
     ///
     /// # Examples
@@ -215,8 +215,8 @@ impl Board {
     pub fn hash(&self) -> u64 {
         let mut hash = self.state.partial_hash();
 
-        for piece_type in 0..PIECE_TYPES {
-            let piece_type = PieceType::new(piece_type as u8);
+        for piece_type in 0..PieceType::LEN {
+            let piece_type = PieceType::new(piece_type);
             for color in 0..Color::LEN {
                 let piece = Piece::new(piece_type, Color::new(color));
 
@@ -260,7 +260,7 @@ impl Default for Board {
                 0,
                 1,
             ),
-            history: Vec::with_capacity(AVERAGE_MOVES),
+            history: Vec::with_capacity(Self::AVERAGE_MOVES),
         }
     }
 }

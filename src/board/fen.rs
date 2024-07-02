@@ -21,8 +21,7 @@
 
 use super::{BoardBuilder, CastleRightsError};
 use crate::{
-    Color, ColorError, File, Piece, PieceError, PieceType, Rank, Square, SquareError,
-    MAX_HALFMOVE_CLOCK, MAX_PAWNS_PER_COLOR, MAX_PIECES_PER_COLOR, SQUARES,
+    Color, ColorError, File, Piece, PieceType, PieceTypeError, Rank, Square, SquareError, State,
 };
 use std::{fmt, str::FromStr};
 use thiserror::Error;
@@ -44,7 +43,7 @@ pub enum FenError {
 
     /// Invalid piece
     #[error("{0}")]
-    Piece(#[from] PieceError),
+    Piece(#[from] PieceTypeError),
 
     /// Pawns cannot be on the first or last rank
     #[error("pawns cannot be on the first or last rank")]
@@ -149,7 +148,7 @@ impl FromStr for BoardBuilder {
 
             // TODO: if is not a checkmate and halfmove_clock is 100, it is a draw
 
-            if halfmove_clock > MAX_HALFMOVE_CLOCK {
+            if halfmove_clock > State::MAX_HALFMOVE_CLOCK {
                 return Err(FenError::HalfmoveClock);
             }
 
@@ -196,8 +195,8 @@ fn split_fen_string(fen: &str) -> Result<Vec<&str>, FenError> {
 ///
 /// Returns an array of pieces, where the index is the square index on the
 /// board and the value is the piece on that square.
-fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; SQUARES], FenError> {
-    let mut pieces = [None; SQUARES];
+fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; Square::LEN], FenError> {
+    let mut pieces = [None; Square::LEN];
 
     let ranks: Vec<&str> = piece_section.split('/').collect();
 
@@ -247,28 +246,28 @@ fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; SQUARES], FenE
         }
     }
 
-    if num_white_pieces > MAX_PIECES_PER_COLOR {
+    if num_white_pieces > Piece::MAX_PIECES_PER_COLOR {
         return Err(FenError::ToManyPieces {
             color: Color::White,
             num_pieces: num_white_pieces as u8,
         });
     }
 
-    if num_black_pieces > MAX_PIECES_PER_COLOR {
+    if num_black_pieces > Piece::MAX_PIECES_PER_COLOR {
         return Err(FenError::ToManyPieces {
             color: Color::Black,
             num_pieces: num_black_pieces as u8,
         });
     }
 
-    if num_white_pawns > MAX_PAWNS_PER_COLOR {
+    if num_white_pawns > Piece::MAX_PAWNS_PER_COLOR {
         return Err(FenError::ToManyPawns {
             color: Color::White,
             num_pawns: num_white_pawns as u8,
         });
     }
 
-    if num_black_pawns > MAX_PAWNS_PER_COLOR {
+    if num_black_pawns > Piece::MAX_PAWNS_PER_COLOR {
         return Err(FenError::ToManyPawns {
             color: Color::Black,
             num_pawns: num_black_pawns as u8,

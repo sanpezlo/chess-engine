@@ -2,9 +2,6 @@ use crate::{Color, File, FileError, Rank, RankError};
 use std::{fmt, str::FromStr};
 use thiserror::Error;
 
-/// The number of squares on a chessboard.
-pub const SQUARES: usize = 64;
-
 /// An error that can occur when parsing a [`Square`].
 #[derive(Error, Debug)]
 pub enum SquareError {
@@ -43,6 +40,9 @@ pub enum SquareError {
 pub struct Square(pub u8);
 
 impl Square {
+    /// The number of squares on a chessboard.
+    pub const LEN: usize = 64;
+
     /// Creates a new `Square` from a [`File`] and a [`Rank`].
     ///
     /// # Examples
@@ -131,7 +131,7 @@ impl Square {
     /// assert!(!Square(64).is_valid());
     /// ```
     pub fn is_valid(self) -> bool {
-        self.0 < SQUARES as u8
+        self.0 < Square::LEN as u8
     }
 }
 

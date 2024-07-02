@@ -1,5 +1,5 @@
 use super::{Board, CastleRights};
-use crate::{Color, Piece, Square, State, AVERAGE_MOVES, SQUARES};
+use crate::{Color, Piece, Square, State};
 
 /// A builder for creating a [`Board`].
 ///
@@ -17,7 +17,7 @@ use crate::{Color, Piece, Square, State, AVERAGE_MOVES, SQUARES};
 /// ```
 #[derive(Clone, Copy, Debug)]
 pub struct BoardBuilder {
-    pub(super) pieces: [Option<Piece>; SQUARES],
+    pub(super) pieces: [Option<Piece>; Square::LEN],
     pub(super) state: State,
 }
 
@@ -39,16 +39,16 @@ impl BoardBuilder {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BoardBuilder, Piece, SQUARES};
+    /// # use chess_engine::{BoardBuilder, Piece, Square};
     /// let mut builder = BoardBuilder::new();
     ///
-    /// let mut pieces = [None; SQUARES];
+    /// let mut pieces = [None; Square::LEN];
     /// pieces[0] = Some("R".parse().unwrap());
     /// pieces[63] = Some("r".parse().unwrap());
     ///
     /// builder.pieces(pieces);
     /// ```
-    pub fn pieces(&mut self, pieces: [Option<Piece>; SQUARES]) -> &mut BoardBuilder {
+    pub fn pieces(&mut self, pieces: [Option<Piece>; Square::LEN]) -> &mut BoardBuilder {
         self.pieces = pieces;
         self
     }
@@ -166,7 +166,7 @@ impl BoardBuilder {
             piece_types_bitboards: Default::default(),
             color_bitboards: Default::default(),
             state: self.state,
-            history: Vec::with_capacity(AVERAGE_MOVES),
+            history: Vec::with_capacity(Board::AVERAGE_MOVES),
         };
 
         for (square, piece) in self.pieces.iter().enumerate() {
@@ -191,7 +191,7 @@ impl BoardBuilder {
 impl Default for BoardBuilder {
     fn default() -> Self {
         BoardBuilder {
-            pieces: [None; SQUARES],
+            pieces: [None; Square::LEN],
             state: State::default(),
         }
     }
