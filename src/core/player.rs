@@ -1,5 +1,5 @@
 use crate::{Color, ColorError};
-use std::{fmt, ops::Not, str::FromStr};
+use std::{fmt, str::FromStr};
 use thiserror::Error;
 
 /// Players in a chess game.
@@ -26,23 +26,6 @@ pub enum PlayerError {
 /// ```
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Player(pub Color);
-
-/// Negates a `Player`.
-///
-/// # Examples
-///
-/// ```
-/// # use chess_engine::{Player, Color};
-/// let player = Player::default();
-/// assert_eq!(!player, Player(Color::Black));
-/// ```
-impl Not for Player {
-    type Output = Self;
-
-    fn not(self) -> Self::Output {
-        Player(!self.0)
-    }
-}
 
 /// Parses a `Player` from a string.
 ///

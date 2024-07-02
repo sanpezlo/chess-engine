@@ -218,7 +218,7 @@ impl Board {
         for piece_type in 0..PIECE_TYPES {
             let piece_type = PieceType::new(piece_type as u8);
             for color in 0..PLAYERS {
-                let piece = Piece::new(piece_type, Player(Color::new(color as u8)));
+                let piece = Piece::new(piece_type, Player(Color::new(color)));
 
                 for square in self.piece_bitboard(piece) {
                     hash ^= ZOBRIST.piece(square, piece);

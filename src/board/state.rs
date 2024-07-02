@@ -255,7 +255,7 @@ impl State {
 
         for player_color in 0..PLAYERS {
             hash ^= ZOBRIST.castling_rights(
-                Color::new(player_color as u8),
+                Color::new(player_color),
                 self.castling_rights.0[player_color],
             );
         }

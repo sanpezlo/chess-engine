@@ -40,7 +40,7 @@ impl Board {
         for player_color in 0..PLAYERS {
             if self.piece_bitboard(Piece::new(
                 PieceType::Queen,
-                Player(Color::new(player_color as u8)),
+                Player(Color::new(player_color)),
             )) > BitBoard(0)
             {
                 return false;
@@ -48,7 +48,7 @@ impl Board {
 
             if self.piece_bitboard(Piece::new(
                 PieceType::Rook,
-                Player(Color::new(player_color as u8)),
+                Player(Color::new(player_color)),
             )) > BitBoard(0)
             {
                 return false;
@@ -56,23 +56,23 @@ impl Board {
 
             if self.piece_bitboard(Piece::new(
                 PieceType::Pawn,
-                Player(Color::new(player_color as u8)),
+                Player(Color::new(player_color)),
             )) > BitBoard(0)
             {
                 return false;
             }
 
-            if self.has_bishop_pair(Color::new(player_color as u8)) {
+            if self.has_bishop_pair(Color::new(player_color)) {
                 return false;
             }
 
             if self.piece_bitboard(Piece::new(
                 PieceType::Bishop,
-                Player(Color::new(player_color as u8)),
+                Player(Color::new(player_color)),
             )) > BitBoard(0)
                 && self.piece_bitboard(Piece::new(
                     PieceType::Knight,
-                    Player(Color::new(player_color as u8)),
+                    Player(Color::new(player_color)),
                 )) > BitBoard(0)
             {
                 return false;
@@ -81,7 +81,7 @@ impl Board {
             if self
                 .piece_bitboard(Piece::new(
                     PieceType::Knight,
-                    Player(Color::new(player_color as u8)),
+                    Player(Color::new(player_color)),
                 ))
                 .0
                 .count_ones()
