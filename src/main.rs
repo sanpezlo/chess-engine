@@ -1,10 +1,16 @@
-use chess_engine::Rank;
+use chess_engine::bitboard;
 
 fn main() {
-    let rank: Rank = "a".parse().unwrap_or_else(|e| {
-        eprintln!("Error: {}", e);
-        std::process::exit(1);
-    });
+    let bitboard = bitboard! {
+        X . . . . . . .
+        X . . . . . . .
+        X . . . . . . .
+        X . . . . . . .
+        X . . . . . . .
+        X . . . . . . .
+        X . . . . . . .
+        X . . . . . . .
+    };
 
-    println!("{:?}", rank);
+    println!("{:?}", bitboard | 2);
 }

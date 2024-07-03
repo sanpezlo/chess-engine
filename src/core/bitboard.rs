@@ -1,8 +1,87 @@
 use crate::{File, Rank, Square};
 use std::{
-    fmt,
+    fmt::{self, Debug},
     ops::{BitAnd, BitAndAssign, BitOr, BitOrAssign, BitXor, BitXorAssign, Not},
 };
+
+/// A macro for creating a bitboard.
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::bitboard;
+/// let bb = bitboard! {
+///     X X X X X X X X
+///     X . . . . . . X
+///     X . . . . . . X
+///     X . . . . . . X
+///     X . . . . . . X
+///     X . . . . . . X
+///     X . . . . . . X
+///     X X X X X X X X
+/// };
+/// ```
+#[macro_export]
+macro_rules! bitboard {
+    (@is_valid_bitboard
+        $a8:tt $b8:tt $c8:tt $d8:tt $e8:tt $f8:tt $g8:tt $h8:tt
+        $a7:tt $b7:tt $c7:tt $d7:tt $e7:tt $f7:tt $g7:tt $h7:tt
+        $a6:tt $b6:tt $c6:tt $d6:tt $e6:tt $f6:tt $g6:tt $h6:tt
+        $a5:tt $b5:tt $c5:tt $d5:tt $e5:tt $f5:tt $g5:tt $h5:tt
+        $a4:tt $b4:tt $c4:tt $d4:tt $e4:tt $f4:tt $g4:tt $h4:tt
+        $a3:tt $b3:tt $c3:tt $d3:tt $e3:tt $f3:tt $g3:tt $h3:tt
+        $a2:tt $b2:tt $c2:tt $d2:tt $e2:tt $f2:tt $g2:tt $h2:tt
+        $a1:tt $b1:tt $c1:tt $d1:tt $e1:tt $f1:tt $g1:tt $h1:tt
+    ) => {
+        $crate::bitboard! {
+            @bitboard
+            $a1 $b1 $c1 $d1 $e1 $f1 $g1 $h1
+            $a2 $b2 $c2 $d2 $e2 $f2 $g2 $h2
+            $a3 $b3 $c3 $d3 $e3 $f3 $g3 $h3
+            $a4 $b4 $c4 $d4 $e4 $f4 $g4 $h4
+            $a5 $b5 $c5 $d5 $e5 $f5 $g5 $h5
+            $a6 $b6 $c6 $d6 $e6 $f6 $g6 $h6
+            $a7 $b7 $c7 $d7 $e7 $f7 $g7 $h7
+            $a8 $b8 $c8 $d8 $e8 $f8 $g8 $h8
+        }
+    };
+    (@is_valid_bitboard $($token:tt)*) => {
+        compile_error!("Expected 64 squares")
+    };
+    (@is_valid_square X) => {
+        true
+    };
+    (@is_valid_square .) => {
+        false
+    };
+    (@is_valid_square $token:tt) => {
+        compile_error!(concat!(
+            "Expected only `X` or `.` tokens, found `",
+            stringify!($token),
+            "`"
+        ))
+    };
+    (@bitboard $($token:tt)*) => {{
+        const BITBOARD: $crate::BitBoard = {
+            let mut index = 0;
+            let mut bitboard = $crate::BitBoard::EMPTY;
+
+            $(
+                index += 1;
+                if $crate::bitboard!(@is_valid_square $token) {
+                    bitboard.0 |= 1 << (index - 1);
+                }
+            )*
+
+
+            bitboard
+        };
+        BITBOARD
+    }};
+    ($($token:tt)*) => {{
+        $crate::bitboard! { @is_valid_bitboard $($token)* }
+    }};
+}
 
 /// A representation of a chessboard as a 64-bit unsigned integer.
 ///
@@ -12,111 +91,106 @@ use std::{
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{BitBoard};
-/// let bitboard = BitBoard(0x000000000000FF00);
+/// # use chess_engine::{bitboard, BitBoard};
+/// let bitboard = bitboard! {
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+///     X X X X X X X X
+///     . . . . . . . .
+/// };
+/// println!("{}", bitboard);
+/// assert_eq!(bitboard, BitBoard(0x000000000000FF00));
 /// ```
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)]
 pub struct BitBoard(pub u64);
 
-/// Performs a bitwise AND operation on two `BitBoard`s.
-///
-/// # Examples
-///
-/// ```
-/// # use chess_engine::BitBoard;
-/// let bitboard1 = BitBoard(0x000000000000FF00);
-/// let bitboard2 = BitBoard(0x0000000000000FFF);
-/// let result = bitboard1 & bitboard2;
-/// assert_eq!(result, BitBoard(0x0000000000000F00));
-/// ```
-impl BitAnd for BitBoard {
-    type Output = Self;
+impl BitBoard {
+    /// An empty `BitBoard`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{BitBoard, bitboard};
+    /// let bitboard = BitBoard::EMPTY;
+    /// assert_eq!(bitboard, bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    /// });
+    /// ```
+    pub const EMPTY: Self = Self(0);
+}
 
-    fn bitand(self, rhs: Self) -> Self::Output {
-        Self(self.0 & rhs.0)
+macro_rules! impl_ops {
+    ($($trait:ident, $fn:ident;)*) => {$(
+        impl $trait for BitBoard {
+            type Output = Self;
+
+            #[inline(always)]
+            fn $fn(self, rhs: Self) -> Self::Output {
+                Self($trait::$fn(self.0, rhs.0))
+            }
+        }
+
+        impl $trait<u64> for BitBoard {
+            type Output = Self;
+
+            #[inline(always)]
+            fn $fn(self, rhs: u64) -> Self::Output {
+                Self($trait::$fn(self.0, rhs))
+            }
+        }
+    )*};
+}
+
+macro_rules! impl_assign_ops {
+    ($($trait:ident, $fn:ident;)*) => {$(
+        impl $trait for BitBoard {
+            #[inline(always)]
+            fn $fn(&mut self, rhs: Self) {
+                $trait::$fn(&mut self.0, rhs.0)
+            }
+        }
+
+        impl $trait<u64> for BitBoard {
+            #[inline(always)]
+            fn $fn(&mut self, rhs: u64) {
+                $trait::$fn(&mut self.0, rhs)
+            }
+        }
+    )*};
+}
+
+impl_ops! {
+    BitAnd, bitand;
+    BitOr, bitor;
+    BitXor, bitxor;
+}
+
+impl_assign_ops! {
+    BitAndAssign, bitand_assign;
+    BitOrAssign, bitor_assign;
+    BitXorAssign, bitxor_assign;
+}
+
+impl PartialEq<u64> for BitBoard {
+    fn eq(&self, other: &u64) -> bool {
+        self.0 == *other
     }
 }
 
-/// Performs a bitwise AND assignment operation on two `BitBoard`s.
-///
-/// # Examples
-///
-/// ```
-/// # use chess_engine::BitBoard;
-/// let mut bitboard1 = BitBoard(0x000000000000FF00);
-/// bitboard1 &= BitBoard(0x0000000000000FFF);
-/// assert_eq!(bitboard1, BitBoard(0x0000000000000F00));
-impl BitAndAssign for BitBoard {
-    fn bitand_assign(&mut self, rhs: Self) {
-        self.0 &= rhs.0;
-    }
-}
-
-/// Performs a bitwise OR operation on two `BitBoard`s.
-///
-/// # Examples
-///
-/// ```
-/// # use chess_engine::BitBoard;
-/// let bitboard1 = BitBoard(0x000000000000FF00);
-/// let bitboard2 = BitBoard(0x0000000000000FFF);
-/// let result = bitboard1 | bitboard2;
-/// assert_eq!(result, BitBoard(0x000000000000FFFF));
-impl BitOr for BitBoard {
-    type Output = Self;
-
-    fn bitor(self, rhs: Self) -> Self::Output {
-        Self(self.0 | rhs.0)
-    }
-}
-
-/// Performs a bitwise OR assignment operation on two `BitBoard`s.
-///
-/// # Examples
-///
-/// ```
-/// # use chess_engine::BitBoard;
-/// let mut bitboard1 = BitBoard(0x000000000000FF00);
-/// bitboard1 |= BitBoard(0x0000000000000FFF);
-/// assert_eq!(bitboard1, BitBoard(0x000000000000FFFF));
-/// ```
-impl BitOrAssign for BitBoard {
-    fn bitor_assign(&mut self, rhs: Self) {
-        self.0 |= rhs.0;
-    }
-}
-
-/// Performs a bitwise XOR operation on two `BitBoard`s.
-///
-/// # Examples
-///
-/// ```
-/// # use chess_engine::BitBoard;
-/// let bitboard1 = BitBoard(0x000000000000FF00);
-/// let bitboard2 = BitBoard(0x0000000000000FFF);
-/// let result = bitboard1 ^ bitboard2;
-/// assert_eq!(result, BitBoard(0x000000000000F0FF));
-impl BitXor for BitBoard {
-    type Output = Self;
-
-    fn bitxor(self, rhs: Self) -> Self::Output {
-        Self(self.0 ^ rhs.0)
-    }
-}
-
-/// Performs a bitwise XOR assignment operation on two `BitBoard`s.
-///
-/// # Examples
-///
-/// ```
-/// # use chess_engine::BitBoard;
-/// let mut bitboard1 = BitBoard(0x000000000000FF00);
-/// bitboard1 ^= BitBoard(0x0000000000000FFF);
-/// assert_eq!(bitboard1, BitBoard(0x000000000000F0FF));
-/// ```
-impl BitXorAssign for BitBoard {
-    fn bitxor_assign(&mut self, rhs: Self) {
-        self.0 ^= rhs.0;
+impl PartialOrd<u64> for BitBoard {
+    fn partial_cmp(&self, other: &u64) -> Option<std::cmp::Ordering> {
+        self.0.partial_cmp(other)
     }
 }
 
@@ -142,12 +216,115 @@ impl Not for BitBoard {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{BitBoard, Square, File, Rank};
-/// let bitboard: BitBoard = Square::with_file_rank(File::A, Rank::One).into();
+/// # use chess_engine::{BitBoard, Square, bitboard};
+/// let bitboard: BitBoard = Square::C2.into();
+/// assert_eq!(bitboard, bitboard! {
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . X . . . . .
+///     . . . . . . . .
+/// });
 /// ```
 impl From<Square> for BitBoard {
     fn from(square: Square) -> Self {
         Self(1u64 << square as usize)
+    }
+}
+
+/// Converts a [`File`] to a [`BitBoard`].
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::{BitBoard, File, bitboard};
+/// let bitboard: BitBoard = File::C.into();
+/// assert_eq!(bitboard, bitboard! {
+///     . . X . . . . .
+///     . . X . . . . .
+///     . . X . . . . .
+///     . . X . . . . .
+///     . . X . . . . .
+///     . . X . . . . .
+///     . . X . . . . .
+///     . . X . . . . .
+/// });
+/// ```
+impl From<File> for BitBoard {
+    fn from(file: File) -> Self {
+        const BITBOARD: u64 = bitboard! {
+            X . . . . . . .
+            X . . . . . . .
+            X . . . . . . .
+            X . . . . . . .
+            X . . . . . . .
+            X . . . . . . .
+            X . . . . . . .
+            X . . . . . . .
+        }
+        .0;
+
+        Self(BITBOARD << file as usize)
+    }
+}
+
+/// Converts a [`Rank`] to a [`BitBoard`].
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::{BitBoard, Rank, bitboard};
+/// let bitboard: BitBoard = Rank::Three.into();
+/// assert_eq!(bitboard, bitboard! {
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+///     X X X X X X X X
+///     . . . . . . . .
+///     . . . . . . . .
+/// });
+/// ```
+impl From<Rank> for BitBoard {
+    fn from(rank: Rank) -> Self {
+        const BITBOARD: u64 = bitboard! {
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            X X X X X X X X
+        }
+        .0;
+
+        Self(BITBOARD << (rank as usize * 8))
+    }
+}
+
+/// Formats a `BitBoard` as a string.
+///
+/// The string is formatted as a 16-character hexadecimal number.
+///
+/// # Examples
+///
+/// ```
+/// # use chess_engine::BitBoard;
+/// let bitboard = BitBoard(0x000000000000FF00);
+/// println!("{}", bitboard);
+/// ```
+///
+/// ```textplain
+/// 000000000000FF00
+/// ```
+impl fmt::Display for BitBoard {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{:016X}", self.0)
     }
 }
 
@@ -161,7 +338,7 @@ impl From<Square> for BitBoard {
 /// ```
 /// # use chess_engine::BitBoard;
 /// let bitboard = BitBoard(0x000000000000FF00);
-/// println!("{}", bitboard);
+/// println!("{:?}", bitboard);
 /// ```
 ///
 /// ```textplain
@@ -177,7 +354,7 @@ impl From<Square> for BitBoard {
 ///       
 ///    000000000000FF00
 /// ```
-impl fmt::Display for BitBoard {
+impl Debug for BitBoard {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut s = String::from("\n");
 
@@ -188,7 +365,7 @@ impl fmt::Display for BitBoard {
             for file in 0..File::LEN {
                 let file = File::new(file);
 
-                if BitBoard::from(Square::with_file_rank(file, rank)).0 & self.0 != 0 {
+                if BitBoard::from(Square::with_file_rank(file, rank)) & *self != 0 {
                     s.push_str("X ");
                 } else {
                     s.push_str(". ");
@@ -233,7 +410,7 @@ impl Iterator for BitBoardIter {
         }
 
         let trailing_zeros = self.bitboard.0.trailing_zeros();
-        self.bitboard.0 ^= 1 << trailing_zeros;
+        self.bitboard ^= 1 << trailing_zeros;
 
         Some(Square::new(trailing_zeros as usize))
     }
@@ -257,73 +434,4 @@ impl IntoIterator for BitBoard {
     fn into_iter(self) -> Self::IntoIter {
         BitBoardIter { bitboard: self }
     }
-}
-
-impl BitBoard {
-    /// An empty `BitBoard`.
-    pub const EMPTY: Self = Self(0);
-}
-
-/// A macro for creating a bitboard.
-///
-/// # Examples
-///
-/// ```
-/// # use chess_engine::bitboard;
-/// let bb = bitboard! {
-///     X X X X X X X X
-///     X . . . . . . X
-///     X . . . . . . X
-///     X . . . . . . X
-///     X . . . . . . X
-///     X . . . . . . X
-///     X . . . . . . X
-///     X X X X X X X X
-/// };
-/// ```
-#[macro_export]
-macro_rules! bitboard {
-    (@is_valid_bitboard
-        $a8:tt $b8:tt $c8:tt $d8:tt $e8:tt $f8:tt $g8:tt $h8:tt
-        $a7:tt $b7:tt $c7:tt $d7:tt $e7:tt $f7:tt $g7:tt $h7:tt
-        $a6:tt $b6:tt $c6:tt $d6:tt $e6:tt $f6:tt $g6:tt $h6:tt
-        $a5:tt $b5:tt $c5:tt $d5:tt $e5:tt $f5:tt $g5:tt $h5:tt
-        $a4:tt $b4:tt $c4:tt $d4:tt $e4:tt $f4:tt $g4:tt $h4:tt
-        $a3:tt $b3:tt $c3:tt $d3:tt $e3:tt $f3:tt $g3:tt $h3:tt
-        $a2:tt $b2:tt $c2:tt $d2:tt $e2:tt $f2:tt $g2:tt $h2:tt
-        $a1:tt $b1:tt $c1:tt $d1:tt $e1:tt $f1:tt $g1:tt $h1:tt
-    ) => {};
-    (@is_valid_bitboard $($token:tt)*) => {
-        compile_error!("Expected 64 squares")
-    };
-    (@is_valid_square X) => {
-        true
-    };
-    (@is_valid_square .) => {
-        false
-    };
-    (@is_valid_square $token:tt) => {
-        compile_error!(concat!(
-            "Expected only `X` or `.` tokens, found `",
-            stringify!($token),
-            "`"
-        ))
-    };
-    ($($token:tt)*) => {{
-        $crate::bitboard! { @is_valid_bitboard $($token)* }
-        const BITBOARD: $crate::BitBoard = {
-            let mut bitboard = $crate::BitBoard::EMPTY;
-            let mut index = 0;
-
-            $(
-                if $crate::bitboard!(@is_valid_square $token) {
-                    bitboard.0 |= 1 << index;
-                }
-                index += 1;
-            )*
-
-            bitboard
-        };
-        BITBOARD
-    }};
 }

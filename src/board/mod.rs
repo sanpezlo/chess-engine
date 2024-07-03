@@ -195,8 +195,8 @@ impl Board {
         let piece_type = piece.piece_type() as usize;
         let color = piece.color() as usize;
 
-        self.piece_types_bitboards[piece_type] |= square.into();
-        self.color_bitboards[color] |= square.into();
+        self.piece_types_bitboards[piece_type] |= square as u64;
+        self.color_bitboards[color] |= square as u64;
     }
 
     /// Returns the hash of the board.
