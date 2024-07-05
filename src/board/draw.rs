@@ -38,15 +38,19 @@ impl Board {
     /// ```
     pub fn draw_by_insufficient_material(&self) -> bool {
         for color in 0..Color::LEN {
-            if self.piece_bitboard(Piece::new(PieceType::Queen, Color::new(color))) > BitBoard(0) {
+            if self.piece_bitboard(Piece::new(PieceType::Queen, Color::new(color)))
+                > BitBoard::EMPTY
+            {
                 return false;
             }
 
-            if self.piece_bitboard(Piece::new(PieceType::Rook, Color::new(color))) > BitBoard(0) {
+            if self.piece_bitboard(Piece::new(PieceType::Rook, Color::new(color))) > BitBoard::EMPTY
+            {
                 return false;
             }
 
-            if self.piece_bitboard(Piece::new(PieceType::Pawn, Color::new(color))) > BitBoard(0) {
+            if self.piece_bitboard(Piece::new(PieceType::Pawn, Color::new(color))) > BitBoard::EMPTY
+            {
                 return false;
             }
 
@@ -54,9 +58,10 @@ impl Board {
                 return false;
             }
 
-            if self.piece_bitboard(Piece::new(PieceType::Bishop, Color::new(color))) > BitBoard(0)
+            if self.piece_bitboard(Piece::new(PieceType::Bishop, Color::new(color)))
+                > BitBoard::EMPTY
                 && self.piece_bitboard(Piece::new(PieceType::Knight, Color::new(color)))
-                    > BitBoard(0)
+                    > BitBoard::EMPTY
             {
                 return false;
             }

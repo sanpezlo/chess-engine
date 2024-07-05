@@ -1,3 +1,5 @@
+use crate::{bitboard, BitBoard};
+
 use super::macros::{create_enum, enum_str};
 
 create_enum! {
@@ -33,5 +35,41 @@ enum_str! {
         Six = "6",
         Seven = "7",
         Eight = "8"
+    }
+}
+
+impl Rank {
+    /// Converts a [`Rank`] to a [`BitBoard`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{BitBoard, Rank, bitboard};
+    /// let bitboard = Rank::Three.bitboard();
+    /// assert_eq!(bitboard, bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     X X X X X X X X
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    /// });
+    /// ```
+    pub const fn bitboard(self) -> BitBoard {
+        const BITBOARD: u64 = bitboard! {
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            . . . . . . . .
+            X X X X X X X X
+        }
+        .0;
+
+        BitBoard(BITBOARD << (self as usize * 8))
     }
 }

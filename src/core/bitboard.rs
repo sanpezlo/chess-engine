@@ -69,7 +69,7 @@ macro_rules! bitboard {
             $(
                 index += 1;
                 if $crate::bitboard!(@is_valid_square $token) {
-                    bitboard.0 |= 1 << (index - 1);
+                    bitboard = bitboard.set_square($crate::Square::new(index - 1));
                 }
             )*
 
@@ -128,6 +128,286 @@ impl BitBoard {
     /// });
     /// ```
     pub const EMPTY: Self = Self(0);
+
+    /// Sets a square on a `BitBoard`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{BitBoard, Square, bitboard};
+    /// let bitboard = BitBoard::EMPTY.set_square(Square::B2);
+    /// assert_eq!(bitboard, bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . X . . . . . .
+    ///     . . . . . . . .
+    /// });
+    /// ```
+    pub const fn set_square(&self, square: Square) -> Self {
+        self.set_bit(square.bitboard().0)
+    }
+
+    /// Sets a bit on a `BitBoard`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{BitBoard};
+    /// let bitboard = BitBoard::EMPTY.set_bit(0x000000000000FF00);
+    /// assert_eq!(bitboard, BitBoard(0x000000000000FF00));
+    /// ```
+    pub const fn set_bit(&self, bit: u64) -> Self {
+        Self(self.0 | bit)
+    }
+
+    /// Unsets a square on a `BitBoard`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{Square, bitboard, BitBoard};
+    /// let bitboard = bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . X . . . . . .
+    ///     . . . . . . . .
+    /// };
+    ///
+    /// assert_eq!(bitboard.unset_square(Square::B2), BitBoard::EMPTY);
+    /// assert_eq!(bitboard.unset_square(Square::A1), bitboard);
+    /// ```
+    pub const fn unset_square(&self, square: Square) -> Self {
+        self.unset_bit(square.bitboard().0)
+    }
+
+    /// Unsets a bit on a `BitBoard`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{BitBoard};
+    /// let bitboard = BitBoard(0x000000000000FF00);
+    /// let result = bitboard.unset_bit(0x000000000000FF00);
+    /// assert_eq!(result, BitBoard::EMPTY);
+    /// ```
+    pub const fn unset_bit(&self, bit: u64) -> Self {
+        Self(self.0 & !bit)
+    }
+
+    /// Returns `true` if a square is set on a `BitBoard`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{Square, bitboard};
+    /// let bitboard = bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . X . . . . . .
+    ///     . . . . . . . .
+    /// };
+    ///
+    /// assert!(!bitboard.is_get_square(Square::A1));
+    /// assert!(bitboard.is_get_square(Square::B2));
+    /// ```
+    pub const fn is_get_square(&self, square: Square) -> bool {
+        self.is_get_bit(square.bitboard().0)
+    }
+
+    /// Returns `true` if a bit is set on a `BitBoard`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{BitBoard};
+    /// let bitboard = BitBoard(0x000000000000FFFF);
+    /// assert!(bitboard.is_get_bit(0x000000000000FF00));
+    /// assert!(bitboard.is_get_bit(0x00000000000000FF));
+    /// ```
+    pub const fn is_get_bit(&self, bit: u64) -> bool {
+        self.0 & bit != 0
+    }
+
+    /// Shifts the bits of a `BitBoard` up by one rank.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{bitboard};
+    /// let bitboard = bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . X . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    /// };
+    /// assert_eq!(bitboard.up(), bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . X . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    /// });
+    pub const fn up(self) -> Self {
+        Self(self.0 << 8)
+    }
+
+    /// Shifts the bits of a `BitBoard` down by one rank.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{bitboard};
+    /// let bitboard = bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . X . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    /// };
+    /// assert_eq!(bitboard.down(), bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . X . . .
+    ///     . . . . . . . .
+    /// });
+    pub const fn down(self) -> Self {
+        Self(self.0 >> 8)
+    }
+
+    /// Shifts the bits of a `BitBoard` to the right by one file.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{bitboard};
+    /// let bitboard = bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . X . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    /// };
+    /// assert_eq!(bitboard.right(), bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . X . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    /// });
+    pub const fn right(self) -> Self {
+        const NOT_FILE_A: u64 = bitboard! {
+            . X X X X X X X
+            . X X X X X X X
+            . X X X X X X X
+            . X X X X X X X
+            . X X X X X X X
+            . X X X X X X X
+            . X X X X X X X
+            . X X X X X X X
+        }
+        .0;
+
+        Self(self.0 << 1 & NOT_FILE_A)
+    }
+
+    /// Shifts the bits of a `BitBoard` to the left by one file.
+    ///
+    /// # Examples
+    ///
+    /// /// ```
+    /// # use chess_engine::{bitboard};
+    /// let bitboard = bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . X . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    /// };
+    /// assert_eq!(bitboard.left(), bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . X . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    /// });
+    pub const fn left(self) -> Self {
+        const NOT_FILE_H: u64 = bitboard! {
+            X X X X X X X .
+            X X X X X X X .
+            X X X X X X X .
+            X X X X X X X .
+            X X X X X X X .
+            X X X X X X X .
+            X X X X X X X .
+            X X X X X X X .
+        }
+        .0;
+        Self(self.0 >> 1 & NOT_FILE_H)
+    }
+
+    /// Returns the least significant square of a `BitBoard`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{BitBoard, Square, bitboard};
+    /// let bitboard = bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . X X X X . .
+    ///     . . . . X . . .
+    ///     . . . X . . . .
+    ///     . . X . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    /// };
+    /// assert_eq!(bitboard.least_significant_square(), Some(Square::C3));
+    /// ```
+    pub const fn least_significant_square(self) -> Option<Square> {
+        if self.0 == 0 {
+            return None;
+        }
+
+        Some(Square::new(self.0.trailing_zeros() as usize))
+    }
 }
 
 macro_rules! impl_ops {
@@ -149,6 +429,33 @@ macro_rules! impl_ops {
                 Self($trait::$fn(self.0, rhs))
             }
         }
+
+        impl $trait<Square> for BitBoard {
+            type Output = Self;
+
+            #[inline(always)]
+            fn $fn(self, rhs: Square) -> Self::Output {
+                Self($trait::$fn(self.0, BitBoard::from(rhs).0))
+            }
+        }
+
+        impl $trait<File> for BitBoard {
+            type Output = Self;
+
+            #[inline(always)]
+            fn $fn(self, rhs: File) -> Self::Output {
+                Self($trait::$fn(self.0, BitBoard::from(rhs).0))
+            }
+        }
+
+        impl $trait<Rank> for BitBoard {
+            type Output = Self;
+
+            #[inline(always)]
+            fn $fn(self, rhs: Rank) -> Self::Output {
+                Self($trait::$fn(self.0, BitBoard::from(rhs).0))
+            }
+        }
     )*};
 }
 
@@ -165,6 +472,27 @@ macro_rules! impl_assign_ops {
             #[inline(always)]
             fn $fn(&mut self, rhs: u64) {
                 $trait::$fn(&mut self.0, rhs)
+            }
+        }
+
+        impl $trait<Square> for BitBoard {
+            #[inline(always)]
+            fn $fn(&mut self, rhs: Square) {
+                $trait::$fn(&mut self.0, BitBoard::from(rhs).0)
+            }
+        }
+
+        impl $trait<File> for BitBoard {
+            #[inline(always)]
+            fn $fn(&mut self, rhs: File) {
+                $trait::$fn(&mut self.0, BitBoard::from(rhs).0)
+            }
+        }
+
+        impl $trait<Rank> for BitBoard {
+            #[inline(always)]
+            fn $fn(&mut self, rhs: Rank) {
+                $trait::$fn(&mut self.0, BitBoard::from(rhs).0)
             }
         }
     )*};
@@ -231,7 +559,7 @@ impl Not for BitBoard {
 /// ```
 impl From<Square> for BitBoard {
     fn from(square: Square) -> Self {
-        Self(1u64 << square as usize)
+        square.bitboard()
     }
 }
 
@@ -255,19 +583,7 @@ impl From<Square> for BitBoard {
 /// ```
 impl From<File> for BitBoard {
     fn from(file: File) -> Self {
-        const BITBOARD: u64 = bitboard! {
-            X . . . . . . .
-            X . . . . . . .
-            X . . . . . . .
-            X . . . . . . .
-            X . . . . . . .
-            X . . . . . . .
-            X . . . . . . .
-            X . . . . . . .
-        }
-        .0;
-
-        Self(BITBOARD << file as usize)
+        file.bitboard()
     }
 }
 
@@ -291,19 +607,7 @@ impl From<File> for BitBoard {
 /// ```
 impl From<Rank> for BitBoard {
     fn from(rank: Rank) -> Self {
-        const BITBOARD: u64 = bitboard! {
-            . . . . . . . .
-            . . . . . . . .
-            . . . . . . . .
-            . . . . . . . .
-            . . . . . . . .
-            . . . . . . . .
-            . . . . . . . .
-            X X X X X X X X
-        }
-        .0;
-
-        Self(BITBOARD << (rank as usize * 8))
+        rank.bitboard()
     }
 }
 
@@ -375,7 +679,7 @@ impl Debug for BitBoard {
             s.push_str("\n");
         }
 
-        s.push_str("\n     a b c d e f g h\n\n");
+        s.push_str("\n    a b c d e f g h\n\n");
 
         s.push_str(&format!("   {:016X}\n", self.0));
 
@@ -388,8 +692,17 @@ impl Debug for BitBoard {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{BitBoard, Square, File, Rank};
-/// let bitboard = BitBoard(0x000000000000FF00);
+/// # use chess_engine::{bitboard, Square, File, Rank};
+/// let bitboard = bitboard!{
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+///     X X X X X X X X
+///     . . . . . . . .
+/// };
 /// let mut iter = bitboard.into_iter();
 /// assert_eq!(iter.next(), Some(Square::A2));
 /// assert_eq!(iter.next(), Some(Square::B2));
@@ -405,14 +718,11 @@ impl Iterator for BitBoardIter {
     type Item = Square;
 
     fn next(&mut self) -> Option<Self::Item> {
-        if self.bitboard == BitBoard(0) {
-            return None;
-        }
+        let square = self.bitboard.least_significant_square()?;
 
-        let trailing_zeros = self.bitboard.0.trailing_zeros();
-        self.bitboard ^= 1 << trailing_zeros;
+        self.bitboard = self.bitboard.unset_square(square);
 
-        Some(Square::new(trailing_zeros as usize))
+        Some(square)
     }
 }
 
@@ -421,11 +731,20 @@ impl Iterator for BitBoardIter {
 /// # Examples
 ///
 /// ```no_run
-/// # use chess_engine::{BitBoard, Square, File, Rank};
-/// let bitboard = BitBoard(0x000000000000FF00);
+/// # use chess_engine::{bitboard, Square};
+/// let bitboard = bitboard!{
+///     . . . . . . . .
+///     . . . . . . . .
+///     . . X X X X . .
+///     . . . . X . . .
+///     . . . X . . . .
+///     . . X . . . . .
+///     . . . . . . . .
+///     . . . . . . . .
+/// };
 /// let mut iter = bitboard.into_iter();
-/// assert_eq!(iter.next(), Some(Square::A2));
-/// assert_eq!(iter.next(), Some(Square::B2));
+/// assert_eq!(iter.next(), Some(Square::C3));
+/// assert_eq!(iter.next(), Some(Square::D4));
 /// ```
 impl IntoIterator for BitBoard {
     type Item = Square;

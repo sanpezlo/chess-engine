@@ -3,8 +3,8 @@ use rand::prelude::*;
 
 use crate::{CastleRightsType, Color, File, Piece, PieceType, Rank, Square};
 
-/// A lazy static [`Zobrist`] instance.
-pub static ZOBRIST: Lazy<Zobrist> = Lazy::new(|| Zobrist::new());
+/// A lazy const [`Zobrist`] instance.
+pub const ZOBRIST: Lazy<Zobrist> = Lazy::new(|| Zobrist::new());
 
 /// A Zobrist hash for chess.
 ///

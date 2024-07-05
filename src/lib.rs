@@ -1,4 +1,5 @@
 #![warn(missing_docs)]
+#![allow(long_running_const_eval)]
 
 //! A chess engine library
 //!

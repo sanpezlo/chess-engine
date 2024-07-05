@@ -5,6 +5,7 @@ mod castle_rights;
 mod castle_rights_type;
 mod draw;
 pub mod fen;
+mod movegen;
 mod state;
 mod zobrist;
 
@@ -12,6 +13,7 @@ use crate::{BitBoard, Color, Piece, PieceType, Square};
 pub use board_builder::*;
 pub use castle_rights::*;
 pub use castle_rights_type::*;
+pub use movegen::*;
 pub use state::*;
 pub use zobrist::*;
 
@@ -195,8 +197,9 @@ impl Board {
         let piece_type = piece.piece_type() as usize;
         let color = piece.color() as usize;
 
-        self.piece_types_bitboards[piece_type] |= square as u64;
-        self.color_bitboards[color] |= square as u64;
+        self.piece_types_bitboards[piece_type] =
+            self.piece_types_bitboards[piece_type].set_square(square);
+        self.color_bitboards[color] = self.color_bitboards[color].set_square(square);
     }
 
     /// Returns the hash of the board.

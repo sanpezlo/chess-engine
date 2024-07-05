@@ -1,6 +1,6 @@
 use std::{fmt, str::FromStr};
 
-use crate::{Color, File, FileError, Rank, RankError};
+use crate::{BitBoard, Color, File, FileError, Rank, RankError};
 use thiserror::Error;
 
 /// An error that can occur when parsing a [`Square`].
@@ -51,6 +51,28 @@ create_square! {
 }
 
 impl Square {
+    /// Converts a [`Square`] to a [`BitBoard`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{BitBoard, Square, bitboard};
+    /// let bitboard = Square::C2.bitboard();
+    /// assert_eq!(bitboard, bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . X . . . . .
+    ///     . . . . . . . .
+    /// });
+    /// ```
+    pub const fn bitboard(self) -> BitBoard {
+        BitBoard(1u64 << self as usize)
+    }
+
     /// Creates a new `Square` from a [`File`] and a [`Rank`].
     ///
     /// # Examples
@@ -72,7 +94,7 @@ impl Square {
     /// # use chess_engine::{Square, File, Rank};
     /// assert_eq!(Square::G5.file(), File::G);
     /// ```
-    pub fn file(self) -> File {
+    pub const fn file(self) -> File {
         File::new(self as usize % 8)
     }
 
@@ -84,7 +106,7 @@ impl Square {
     /// # use chess_engine::{Square, File, Rank};
     /// assert_eq!(Square::G5.rank(), Rank::Five);
     /// ```
-    pub fn rank(self) -> Rank {
+    pub const fn rank(self) -> Rank {
         Rank::new(self as usize / 8)
     }
 
@@ -96,7 +118,7 @@ impl Square {
     /// # use chess_engine::{Square, File, Rank, Color};
     /// assert_eq!(Square::A1.color(), Color::Black);
     /// ```
-    pub fn color(self) -> Color {
+    pub const fn color(self) -> Color {
         if self.rank() as u8 % 2 == 0 {
             if self.file() as u8 % 2 == 0 {
                 Color::Black

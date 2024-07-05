@@ -1,3 +1,5 @@
+use crate::{bitboard, BitBoard};
+
 use super::macros::{create_enum, enum_str};
 
 create_enum! {
@@ -33,5 +35,41 @@ enum_str! {
         F = "f",
         G = "g",
         H = "h"
+    }
+}
+
+impl File {
+    /// Converts a [`File`] to a [`BitBoard`].
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine::{BitBoard, File, bitboard};
+    /// let bitboard = File::C.bitboard();
+    /// assert_eq!(bitboard, bitboard! {
+    ///     . . X . . . . .
+    ///     . . X . . . . .
+    ///     . . X . . . . .
+    ///     . . X . . . . .
+    ///     . . X . . . . .
+    ///     . . X . . . . .
+    ///     . . X . . . . .
+    ///     . . X . . . . .
+    /// });
+    /// ```
+    pub const fn bitboard(self) -> BitBoard {
+        const BITBOARD: u64 = bitboard! {
+            X . . . . . . .
+            X . . . . . . .
+            X . . . . . . .
+            X . . . . . . .
+            X . . . . . . .
+            X . . . . . . .
+            X . . . . . . .
+            X . . . . . . .
+        }
+        .0;
+
+        BitBoard(BITBOARD << self as usize)
     }
 }
