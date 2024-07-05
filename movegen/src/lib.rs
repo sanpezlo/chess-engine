@@ -1,4 +1,7 @@
-//! The `Board` type for chessboard representation.
+#![deny(missing_docs)]
+#![doc = include_str!("../README.md")]
+
+//! Move generation library for the chess engine.
 
 mod board;
 mod board_builder;
@@ -12,7 +15,6 @@ mod zobrist;
 pub use board::*;
 pub use board_builder::*;
 pub use castle_rights::*;
-pub use chess_engine_core::*;
 pub use movegen::*;
 pub use state::*;
 pub use zobrist::*;

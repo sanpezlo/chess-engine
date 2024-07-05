@@ -1,3 +1,6 @@
+#![deny(missing_docs)]
+#![doc = include_str!("../README.md")]
+
 //! Types for working with chessboards.
 
 mod bitboard;

@@ -9,6 +9,7 @@ impl Board {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let board = Board::default();
     /// assert_eq!(board.has_bishop_pair(Color::White), true);
     /// ```

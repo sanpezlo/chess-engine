@@ -8,6 +8,7 @@ use crate::{CastleRights, ZOBRIST};
 ///
 /// ```
 /// # use chess_engine_movegen::*;
+/// # use chess_engine_core::*;
 /// let state = State::default();
 /// assert_eq!(state.color(), Color::White);
 /// ```
@@ -32,6 +33,7 @@ impl State {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let state = State::default();
     /// assert_eq!(state.color(), Color::White);
     /// ```
@@ -45,6 +47,7 @@ impl State {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let state = State::default();
     /// assert_eq!(state.castling_rights(), CastleRights::default());
     /// ```
@@ -58,6 +61,7 @@ impl State {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let state = State::default();
     /// assert_eq!(state.en_passant_square(), None);
     /// ```
@@ -74,6 +78,7 @@ impl State {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let state = State::default();
     /// assert_eq!(state.halfmove_clock(), 0);
     /// ```
@@ -89,6 +94,7 @@ impl State {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let state = State::default();
     /// assert_eq!(state.fullmove_counter(), 1);
     /// ```
@@ -102,6 +108,7 @@ impl State {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let state = State::default();
     /// let hash = state.hash();
     /// assert_eq!(hash, 0);
@@ -116,6 +123,7 @@ impl State {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let mut state = State::default();
     /// state.set_color(Color::Black);
     /// assert_eq!(state.color(), Color::Black);
@@ -130,6 +138,7 @@ impl State {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let mut state = State::default();
     /// state.set_castling_rights(CastleRights([CastleRightsType::Both; 2]));
     /// assert_eq!(state.castling_rights(), CastleRights([CastleRightsType::Both; 2]));
@@ -148,6 +157,7 @@ impl State {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let mut state = State::default();
     /// state.set_en_passant_square(Some("e3".parse().unwrap()));
     /// assert_eq!(state.en_passant_square(), Some(Square::E3));
@@ -168,6 +178,7 @@ impl State {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let mut state = State::default();
     /// state.set_halfmove_clock(50);
     /// assert_eq!(state.halfmove_clock(), 50);
@@ -182,6 +193,7 @@ impl State {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let mut state = State::default();
     /// state.set_fullmove_counter(50);
     /// assert_eq!(state.fullmove_counter(), 50);
@@ -196,6 +208,7 @@ impl State {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let mut state = State::default();
     /// state.set_hash(50);
     /// assert_eq!(state.hash(), 50);
@@ -212,6 +225,7 @@ impl State {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let state = State::new(
     ///     Color::White,
     ///     CastleRights::default(),
@@ -244,6 +258,7 @@ impl State {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let state = State::default();
     /// let hash = state.partial_hash();
     /// ```
@@ -274,6 +289,7 @@ impl State {
 ///
 /// ```
 /// # use chess_engine_movegen::*;
+/// # use chess_engine_core::*;
 /// let state = State::default();
 /// ```
 impl Default for State {

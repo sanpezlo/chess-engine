@@ -8,6 +8,7 @@ use chess_engine_core::{
 ///
 /// ```
 /// # use chess_engine_movegen::*;
+/// # use chess_engine_core::*;
 /// let white_pawn_attacks = PAWNS_ATTACKS[Color::White as usize][Square::E4 as usize];
 /// let black_pawn_attacks = PAWNS_ATTACKS[Color::Black as usize][Square::E4 as usize];
 ///
@@ -52,6 +53,7 @@ pub const PAWNS_ATTACKS: [[BitBoard; Square::LEN]; Color::LEN] = {
 ///
 /// ```
 /// # use chess_engine_movegen::*;
+/// # use chess_engine_core::*;
 /// let knight_attacks = KNIGHTS_ATTACKS[Square::E4 as usize];
 ///
 /// assert_eq!(knight_attacks, bitboard!{
@@ -83,6 +85,7 @@ pub const KNIGHTS_ATTACKS: [BitBoard; Square::LEN] = {
 ///
 /// ```
 /// # use chess_engine_movegen::*;
+/// # use chess_engine_core::*;
 /// let king_attacks = KINGS_ATTACKS[Square::E4 as usize];
 ///
 /// assert_eq!(king_attacks, bitboard!{
@@ -114,6 +117,7 @@ pub const KINGS_ATTACKS: [BitBoard; Square::LEN] = {
 ///
 /// ```
 /// # use chess_engine_movegen::*;
+/// # use chess_engine_core::*;
 /// let bishop_occupancy = RELEVANT_BISHOP_OCCUPANCY[Square::E4 as usize];
 ///
 /// assert_eq!(bishop_occupancy, bitboard!{
@@ -146,7 +150,7 @@ pub const RELEVANT_BISHOP_OCCUPANCY: [BitBoard; Square::LEN] = {
 ///
 /// ```
 /// # use chess_engine_movegen::*;
-///
+/// # use chess_engine_core::*;
 /// let rook_occupancy = RELEVANT_ROOK_OCCUPANCY[Square::E4 as usize];
 /// assert_eq!(rook_occupancy, bitboard!{
 ///     . . . . . . . .

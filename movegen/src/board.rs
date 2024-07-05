@@ -32,6 +32,7 @@ impl Board {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let board = Board::default();
     /// assert_eq!(
     ///     board.piece_types_bitboard(PieceType::Pawn),
@@ -48,6 +49,7 @@ impl Board {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let board = Board::default();
     /// assert_eq!(
     ///     board.color_bitboard(Color::White),
@@ -63,6 +65,7 @@ impl Board {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let board = Board::default();
     /// let piece = Piece::new(PieceType::Pawn, Color::White);
     /// assert_eq!(board.piece_bitboard(piece), BitBoard(0x000000000000FF00));
@@ -78,6 +81,7 @@ impl Board {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let board = Board::default();
     /// assert_eq!(board.color(), Color::White);
     /// ```
@@ -222,6 +226,7 @@ impl Board {
 ///
 /// ```
 /// # use chess_engine_movegen::*;
+/// # use chess_engine_core::*;
 /// let board = Board::default();
 /// assert_eq!(board.color(), Color::White);
 /// ```

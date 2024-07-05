@@ -8,6 +8,7 @@ use chess_engine_core::{Color, Piece, Square};
 ///
 /// ```
 /// # use chess_engine_movegen::*;
+/// # use chess_engine_core::*;
 /// let mut builder = BoardBuilder::new();
 ///
 /// builder.put_piece("R".parse().unwrap(), "a1".parse().unwrap());
@@ -41,6 +42,7 @@ impl BoardBuilder {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let mut builder = BoardBuilder::new();
     ///
     /// let mut pieces = [None; Square::LEN];

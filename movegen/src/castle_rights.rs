@@ -8,6 +8,7 @@ use chess_engine_core::{CastleRightsType, CastleRightsTypeError, Color};
 ///
 /// ```
 /// # use chess_engine_movegen::*;
+/// # use chess_engine_core::*;
 /// let castle_rights = CastleRights([CastleRightsType::Both; Color::LEN]);
 /// assert_ne!(castle_rights, CastleRights::default());
 /// ```
@@ -24,6 +25,7 @@ pub struct CastleRights(pub [CastleRightsType; Color::LEN]);
 ///
 /// ```
 /// # use chess_engine_movegen::*;
+/// # use chess_engine_core::*;
 /// let castle_rights: CastleRights = "KQkq".parse().unwrap();
 /// assert_eq!(castle_rights, CastleRights([CastleRightsType::Both; Color::LEN]));
 /// ```
@@ -63,6 +65,7 @@ impl FromStr for CastleRights {
 ///
 /// ```
 /// # use chess_engine_movegen::*;
+/// # use chess_engine_core::*;
 /// let castle_rights = CastleRights([CastleRightsType::None; Color::LEN]);
 /// assert_eq!(castle_rights.to_string(), "-");
 /// ```
@@ -90,6 +93,7 @@ impl fmt::Display for CastleRights {
 ///
 /// ```
 /// # use chess_engine_movegen::*;
+/// # use chess_engine_core::*;
 /// let castle_rights = CastleRights::default();
 /// assert_eq!(castle_rights, CastleRights([CastleRightsType::None; 2]));
 impl Default for CastleRights {

@@ -77,6 +77,7 @@ impl Zobrist {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let square: Square = "a2".parse().unwrap();
     /// let piece = Piece::new(PieceType::Pawn, Color::White);
     /// let hash = ZOBRIST.piece(square, piece);
@@ -91,6 +92,7 @@ impl Zobrist {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let square: Square = "a3".parse().unwrap();
     /// let hash = ZOBRIST.en_passant(square);
     /// ```
@@ -107,6 +109,7 @@ impl Zobrist {
     ///
     /// ```
     /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
     /// let hash = ZOBRIST.castling_rights(Color::White, CastleRightsType::Both);
     /// ```
     pub fn castling_rights(&self, color: Color, castle_rights_type: CastleRightsType) -> u64 {
