@@ -1,11 +1,13 @@
-use crate::{bitboard, random_magic_number, BitBoard, Color, File, Rank, SlidingPiece, Square};
+use chess_engine_core::{
+    bitboard, random_magic_number, BitBoard, Color, File, Rank, SlidingPiece, Square,
+};
 
 /// The pawn attacks for each color and square.
 ///
 /// # Example
 ///
 /// ```
-/// # use chess_engine::{PAWNS_ATTACKS, Color, Square, bitboard};
+/// # use chess_engine_movegen::*;
 /// let white_pawn_attacks = PAWNS_ATTACKS[Color::White as usize][Square::E4 as usize];
 /// let black_pawn_attacks = PAWNS_ATTACKS[Color::Black as usize][Square::E4 as usize];
 ///
@@ -49,7 +51,7 @@ pub const PAWNS_ATTACKS: [[BitBoard; Square::LEN]; Color::LEN] = {
 /// # Example
 ///
 /// ```
-/// # use chess_engine::{KNIGHTS_ATTACKS, Square, bitboard};
+/// # use chess_engine_movegen::*;
 /// let knight_attacks = KNIGHTS_ATTACKS[Square::E4 as usize];
 ///
 /// assert_eq!(knight_attacks, bitboard!{
@@ -80,7 +82,7 @@ pub const KNIGHTS_ATTACKS: [BitBoard; Square::LEN] = {
 /// # Example
 ///
 /// ```
-/// # use chess_engine::{KINGS_ATTACKS, Square, bitboard};
+/// # use chess_engine_movegen::*;
 /// let king_attacks = KINGS_ATTACKS[Square::E4 as usize];
 ///
 /// assert_eq!(king_attacks, bitboard!{
@@ -111,7 +113,7 @@ pub const KINGS_ATTACKS: [BitBoard; Square::LEN] = {
 /// # Example
 ///
 /// ```
-/// # use chess_engine::{RELEVANT_BISHOP_OCCUPANCY, Square, bitboard};
+/// # use chess_engine_movegen::*;
 /// let bishop_occupancy = RELEVANT_BISHOP_OCCUPANCY[Square::E4 as usize];
 ///
 /// assert_eq!(bishop_occupancy, bitboard!{
@@ -143,7 +145,7 @@ pub const RELEVANT_BISHOP_OCCUPANCY: [BitBoard; Square::LEN] = {
 /// # Example
 ///
 /// ```
-/// # use chess_engine::{RELEVANT_ROOK_OCCUPANCY, Square, bitboard};
+/// # use chess_engine_movegen::*;
 ///
 /// let rook_occupancy = RELEVANT_ROOK_OCCUPANCY[Square::E4 as usize];
 /// assert_eq!(rook_occupancy, bitboard!{

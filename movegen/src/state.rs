@@ -1,11 +1,13 @@
-use crate::{CastleRights, Color, Rank, Square, ZOBRIST};
+use chess_engine_core::{Color, Rank, Square};
+
+use crate::{CastleRights, ZOBRIST};
 
 /// Represents the state of the chessboard.
 ///
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{State, CastleRights, Color};
+/// # use chess_engine_movegen::*;
 /// let state = State::default();
 /// assert_eq!(state.color(), Color::White);
 /// ```
@@ -29,7 +31,7 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State, Color};
+    /// # use chess_engine_movegen::*;
     /// let state = State::default();
     /// assert_eq!(state.color(), Color::White);
     /// ```
@@ -42,7 +44,7 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State, CastleRights};
+    /// # use chess_engine_movegen::*;
     /// let state = State::default();
     /// assert_eq!(state.castling_rights(), CastleRights::default());
     /// ```
@@ -55,7 +57,7 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State};
+    /// # use chess_engine_movegen::*;
     /// let state = State::default();
     /// assert_eq!(state.en_passant_square(), None);
     /// ```
@@ -71,7 +73,7 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State};
+    /// # use chess_engine_movegen::*;
     /// let state = State::default();
     /// assert_eq!(state.halfmove_clock(), 0);
     /// ```
@@ -86,7 +88,7 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State};
+    /// # use chess_engine_movegen::*;
     /// let state = State::default();
     /// assert_eq!(state.fullmove_counter(), 1);
     /// ```
@@ -99,7 +101,7 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State, Color};
+    /// # use chess_engine_movegen::*;
     /// let state = State::default();
     /// let hash = state.hash();
     /// assert_eq!(hash, 0);
@@ -113,7 +115,7 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State, Color};
+    /// # use chess_engine_movegen::*;
     /// let mut state = State::default();
     /// state.set_color(Color::Black);
     /// assert_eq!(state.color(), Color::Black);
@@ -127,7 +129,7 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State, CastleRights, CastleRightsType};
+    /// # use chess_engine_movegen::*;
     /// let mut state = State::default();
     /// state.set_castling_rights(CastleRights([CastleRightsType::Both; 2]));
     /// assert_eq!(state.castling_rights(), CastleRights([CastleRightsType::Both; 2]));
@@ -145,7 +147,7 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State, Square, File, Rank};
+    /// # use chess_engine_movegen::*;
     /// let mut state = State::default();
     /// state.set_en_passant_square(Some("e3".parse().unwrap()));
     /// assert_eq!(state.en_passant_square(), Some(Square::E3));
@@ -165,7 +167,7 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State};
+    /// # use chess_engine_movegen::*;
     /// let mut state = State::default();
     /// state.set_halfmove_clock(50);
     /// assert_eq!(state.halfmove_clock(), 50);
@@ -179,7 +181,7 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State};
+    /// # use chess_engine_movegen::*;
     /// let mut state = State::default();
     /// state.set_fullmove_counter(50);
     /// assert_eq!(state.fullmove_counter(), 50);
@@ -193,7 +195,7 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State};
+    /// # use chess_engine_movegen::*;
     /// let mut state = State::default();
     /// state.set_hash(50);
     /// assert_eq!(state.hash(), 50);
@@ -209,7 +211,7 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{CastleRights, State, Color};
+    /// # use chess_engine_movegen::*;
     /// let state = State::new(
     ///     Color::White,
     ///     CastleRights::default(),
@@ -241,7 +243,7 @@ impl State {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{State, Color, ZOBRIST};
+    /// # use chess_engine_movegen::*;
     /// let state = State::default();
     /// let hash = state.partial_hash();
     /// ```
@@ -271,7 +273,7 @@ impl State {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::State;
+/// # use chess_engine_movegen::*;
 /// let state = State::default();
 /// ```
 impl Default for State {

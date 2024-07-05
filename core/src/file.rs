@@ -44,7 +44,7 @@ impl File {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BitBoard, File, bitboard};
+    /// # use chess_engine_core::*;
     /// let bitboard = File::C.bitboard();
     /// assert_eq!(bitboard, bitboard! {
     ///     . . X . . . . .

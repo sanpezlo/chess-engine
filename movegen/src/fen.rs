@@ -12,16 +12,17 @@
 //! # Examples
 //!
 //! ```
-//! # use chess_engine::BoardBuilder;
+//! # use chess_engine_movegen::*;
 //! let fen_str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 //! let board: BoardBuilder = fen_str.parse().unwrap();
 //!
 //! assert_eq!(board.to_string(), fen_str);
 //! ```
 
-use super::{BoardBuilder, CastleRightsTypeError};
-use crate::{
-    Color, ColorError, File, Piece, PieceType, PieceTypeError, Rank, Square, SquareError, State,
+use crate::{BoardBuilder, State};
+use chess_engine_core::{
+    CastleRightsTypeError, Color, ColorError, File, Piece, PieceType, PieceTypeError, Rank, Square,
+    SquareError,
 };
 use std::{fmt, str::FromStr};
 use thiserror::Error;
@@ -101,7 +102,7 @@ pub enum FenError {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::BoardBuilder;
+/// # use chess_engine_movegen::*;
 /// let fen_str = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 /// let board: BoardBuilder = fen_str.parse().unwrap();
 /// assert_eq!(board.to_string(), fen_str);
@@ -281,7 +282,7 @@ fn piece_placement(piece_section: &str) -> Result<[Option<Piece>; Square::LEN], 
 ///
 /// # Examples
 /// ```
-/// # use chess_engine::BoardBuilder;
+/// # use chess_engine_movegen::*;
 /// let board = BoardBuilder::new();
 /// assert_eq!(
 ///    board.to_string(),

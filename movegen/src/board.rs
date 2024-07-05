@@ -1,21 +1,6 @@
-//! The `Board` type for chessboard representation.
+use chess_engine_core::{BitBoard, CastleRightsType, Color, Piece, PieceType, Square};
 
-mod board_builder;
-mod castle_rights;
-mod castle_rights_type;
-mod draw;
-pub mod fen;
-mod movegen;
-mod state;
-mod zobrist;
-
-use crate::{BitBoard, Color, Piece, PieceType, Square};
-pub use board_builder::*;
-pub use castle_rights::*;
-pub use castle_rights_type::*;
-pub use movegen::*;
-pub use state::*;
-pub use zobrist::*;
+use crate::{BoardBuilder, CastleRights, State, ZOBRIST};
 
 /// Chessboard representation.
 ///
@@ -25,15 +10,15 @@ pub use zobrist::*;
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::Board;
+/// # use chess_engine_movegen::*;
 /// let board = Board::builder().build();
 /// ```
 #[derive(Clone, Debug)]
 pub struct Board {
-    piece_types_bitboards: [BitBoard; PieceType::LEN],
-    color_bitboards: [BitBoard; Color::LEN],
-    state: State,
-    history: Vec<State>,
+    pub(crate) piece_types_bitboards: [BitBoard; PieceType::LEN],
+    pub(crate) color_bitboards: [BitBoard; Color::LEN],
+    pub(crate) state: State,
+    pub(crate) history: Vec<State>,
 }
 
 /// Getters for the `Board` struct.
@@ -46,7 +31,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Board, BitBoard, PieceType};
+    /// # use chess_engine_movegen::*;
     /// let board = Board::default();
     /// assert_eq!(
     ///     board.piece_types_bitboard(PieceType::Pawn),
@@ -62,7 +47,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Board, BitBoard, Color};
+    /// # use chess_engine_movegen::*;
     /// let board = Board::default();
     /// assert_eq!(
     ///     board.color_bitboard(Color::White),
@@ -77,7 +62,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Board, BitBoard, Piece, Color, PieceType};
+    /// # use chess_engine_movegen::*;
     /// let board = Board::default();
     /// let piece = Piece::new(PieceType::Pawn, Color::White);
     /// assert_eq!(board.piece_bitboard(piece), BitBoard(0x000000000000FF00));
@@ -92,7 +77,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Board, Color};
+    /// # use chess_engine_movegen::*;
     /// let board = Board::default();
     /// assert_eq!(board.color(), Color::White);
     /// ```
@@ -105,7 +90,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Board, CastleRights};
+    /// # use chess_engine_movegen::*;
     /// let board = Board::default();
     /// assert_ne!(board.castling_rights(), CastleRights::default());
     /// ```
@@ -118,7 +103,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Board, Square};
+    /// # use chess_engine_movegen::*;
     /// let board = Board::default();
     /// assert_eq!(board.en_passant_square(), None);
     /// ```
@@ -133,7 +118,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::Board;
+    /// # use chess_engine_movegen::*;
     /// let board = Board::default();
     /// assert_eq!(board.halfmove_clock(), 0);
     /// ```
@@ -148,7 +133,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::Board;
+    /// # use chess_engine_movegen::*;
     /// let board = Board::default();
     /// assert_eq!(board.fullmove_counter(), 1);
     /// ```
@@ -162,7 +147,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::Board;
+    /// # use chess_engine_movegen::*;
     /// let board = Board::default();
     /// assert_eq!(board.history().len(), 0);
     /// ```
@@ -177,7 +162,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::Board;
+    /// # use chess_engine_movegen::*;
     /// let board = Board::builder().build();
     /// ```
     pub fn builder() -> BoardBuilder {
@@ -189,7 +174,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Board};
+    /// # use chess_engine_movegen::*;
     /// let mut board = Board::default();
     /// board.put_piece("R".parse().unwrap(), "a1".parse().unwrap());
     /// ```
@@ -207,7 +192,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::Board;
+    /// # use chess_engine_movegen::*;
     /// let board = Board::default();
     /// let hash = board.hash();
     /// ```
@@ -236,7 +221,7 @@ impl Board {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{Board, Color};
+/// # use chess_engine_movegen::*;
 /// let board = Board::default();
 /// assert_eq!(board.color(), Color::White);
 /// ```

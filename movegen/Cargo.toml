@@ -1,0 +1,13 @@
+[package]
+name = "chess-engine-movegen"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+once_cell = "1.19.0"
+rand = "0.8.5"
+thiserror = "1.0.61"
+chess-engine-core = { path = "../core" }
+
+[build-dependencies]
+chess-engine-core = { path = "../core" }

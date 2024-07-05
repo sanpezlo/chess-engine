@@ -1,6 +1,7 @@
 //! Types for working with chessboards.
 
 mod bitboard;
+mod castle_rights_type;
 mod color;
 mod file;
 pub(crate) mod macros;
@@ -12,6 +13,7 @@ mod sliding_piece;
 mod square;
 
 pub use bitboard::*;
+pub use castle_rights_type::*;
 pub use color::*;
 pub use file::*;
 pub use piece::*;

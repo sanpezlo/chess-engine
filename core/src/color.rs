@@ -23,7 +23,7 @@ enum_str!(
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::Color;
+/// # use chess_engine_core::*;
 /// assert_eq!(Color::default(), Color::White);
 /// ```
 impl Default for Color {

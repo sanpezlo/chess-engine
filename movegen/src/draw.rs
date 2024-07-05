@@ -1,4 +1,6 @@
-use crate::{BitBoard, Board, Color, Piece, PieceType, State};
+use chess_engine_core::{BitBoard, Color, Piece, PieceType};
+
+use crate::{Board, State};
 
 impl Board {
     /// Returns `true` if the [`Color`] has the bishop pair.
@@ -6,7 +8,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Board, Color};
+    /// # use chess_engine_movegen::*;
     /// let board = Board::default();
     /// assert_eq!(board.has_bishop_pair(Color::White), true);
     /// ```
@@ -32,7 +34,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Board};
+    /// # use chess_engine_movegen::*;
     /// let board = Board::default();
     /// assert_eq!(board.draw_by_insufficient_material(), false);
     /// ```
@@ -120,7 +122,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Board};
+    /// # use chess_engine_movegen::*;
     /// let board = Board::default();
     /// assert_eq!(board.draw_by_fifty_moves(), false);
     /// ```
@@ -133,7 +135,7 @@ impl Board {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Board};
+    /// # use chess_engine_movegen::*;
     /// let board = Board::default();
     /// assert_eq!(board.draw_by_repetition(), false);
     /// ```

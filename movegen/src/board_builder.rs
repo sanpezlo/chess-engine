@@ -1,12 +1,13 @@
-use super::{Board, CastleRights};
-use crate::{Color, Piece, Square, State};
+use crate::{Board, CastleRights, State};
+
+use chess_engine_core::{Color, Piece, Square};
 
 /// A builder for creating a [`Board`].
 ///
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{BoardBuilder};
+/// # use chess_engine_movegen::*;
 /// let mut builder = BoardBuilder::new();
 ///
 /// builder.put_piece("R".parse().unwrap(), "a1".parse().unwrap());
@@ -27,7 +28,7 @@ impl BoardBuilder {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::BoardBuilder;
+    /// # use chess_engine_movegen::*;
     /// let builder = BoardBuilder::new();
     /// ```
     pub fn new() -> Self {
@@ -39,7 +40,7 @@ impl BoardBuilder {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BoardBuilder, Piece, Square};
+    /// # use chess_engine_movegen::*;
     /// let mut builder = BoardBuilder::new();
     ///
     /// let mut pieces = [None; Square::LEN];
@@ -58,7 +59,7 @@ impl BoardBuilder {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Board};
+    /// # use chess_engine_movegen::*;
     /// let board = Board::builder()
     ///     .put_piece("R".parse().unwrap(), "a1".parse().unwrap())
     ///     .build();
@@ -73,7 +74,7 @@ impl BoardBuilder {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BoardBuilder, Color};
+    /// # use chess_engine_movegen::*;
     /// let mut builder = BoardBuilder::new();
     /// builder.color("b".parse().unwrap());
     /// ```
@@ -87,7 +88,7 @@ impl BoardBuilder {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BoardBuilder, CastleRights};
+    /// # use chess_engine_movegen::*;
     /// let mut builder = BoardBuilder::new();
     /// builder.castling_rights(CastleRights::default());
     /// ```
@@ -101,7 +102,7 @@ impl BoardBuilder {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BoardBuilder, Square};
+    /// # use chess_engine_movegen::*;
     /// let mut builder = BoardBuilder::new();
     /// builder.en_passant_square(Some("e3".parse().unwrap()));
     /// ```
@@ -118,7 +119,7 @@ impl BoardBuilder {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BoardBuilder};
+    /// # use chess_engine_movegen::*;
     /// let mut builder = BoardBuilder::new();
     /// builder.halfmove_clock(50);
     /// ```
@@ -134,7 +135,7 @@ impl BoardBuilder {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BoardBuilder};
+    /// # use chess_engine_movegen::*;
     /// let mut builder = BoardBuilder::new();
     /// builder.fullmove_counter(1);
     /// ```
@@ -150,7 +151,7 @@ impl BoardBuilder {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BoardBuilder, Color, CastleRights};
+    /// # use chess_engine_movegen::*;
     /// let mut builder = BoardBuilder::new();
     /// builder.color("b".parse().unwrap());
     /// builder.castling_rights(CastleRights::default());
@@ -179,7 +180,7 @@ impl BoardBuilder {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::BoardBuilder;
+/// # use chess_engine_movegen::*;
 /// let builder = BoardBuilder::default();
 /// ```
 impl Default for BoardBuilder {

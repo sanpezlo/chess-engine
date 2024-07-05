@@ -9,7 +9,7 @@ use std::{
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::bitboard;
+/// # use chess_engine_core::*;
 /// let bb = bitboard! {
 ///     X X X X X X X X
 ///     X . . . . . . X
@@ -91,7 +91,7 @@ macro_rules! bitboard {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{bitboard, BitBoard};
+/// # use chess_engine_core::*;
 /// let bitboard = bitboard! {
 ///     . . . . . . . .
 ///     . . . . . . . .
@@ -114,7 +114,7 @@ impl BitBoard {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BitBoard, bitboard};
+    /// # use chess_engine_core::*;
     /// let bitboard = BitBoard::EMPTY;
     /// assert_eq!(bitboard, bitboard! {
     ///     . . . . . . . .
@@ -134,7 +134,7 @@ impl BitBoard {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BitBoard, Square, bitboard};
+    /// # use chess_engine_core::*;
     /// let bitboard = BitBoard::EMPTY.set_square(Square::B2);
     /// assert_eq!(bitboard, bitboard! {
     ///     . . . . . . . .
@@ -156,7 +156,7 @@ impl BitBoard {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BitBoard};
+    /// # use chess_engine_core::*;
     /// let bitboard = BitBoard::EMPTY.set_bit(0x000000000000FF00);
     /// assert_eq!(bitboard, BitBoard(0x000000000000FF00));
     /// ```
@@ -169,7 +169,7 @@ impl BitBoard {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Square, bitboard, BitBoard};
+    /// # use chess_engine_core::*;
     /// let bitboard = bitboard! {
     ///     . . . . . . . .
     ///     . . . . . . . .
@@ -193,7 +193,7 @@ impl BitBoard {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BitBoard};
+    /// # use chess_engine_core::*;
     /// let bitboard = BitBoard(0x000000000000FF00);
     /// let result = bitboard.unset_bit(0x000000000000FF00);
     /// assert_eq!(result, BitBoard::EMPTY);
@@ -207,7 +207,7 @@ impl BitBoard {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Square, bitboard};
+    /// # use chess_engine_core::*;
     /// let bitboard = bitboard! {
     ///     . . . . . . . .
     ///     . . . . . . . .
@@ -231,7 +231,7 @@ impl BitBoard {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BitBoard};
+    /// # use chess_engine_core::*;
     /// let bitboard = BitBoard(0x000000000000FFFF);
     /// assert!(bitboard.is_get_bit(0x000000000000FF00));
     /// assert!(bitboard.is_get_bit(0x00000000000000FF));
@@ -245,7 +245,7 @@ impl BitBoard {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{bitboard};
+    /// # use chess_engine_core::*;
     /// let bitboard = bitboard! {
     ///     . . . . . . . .
     ///     . . . . . . . .
@@ -275,7 +275,7 @@ impl BitBoard {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{bitboard};
+    /// # use chess_engine_core::*;
     /// let bitboard = bitboard! {
     ///     . . . . . . . .
     ///     . . . . . . . .
@@ -305,7 +305,7 @@ impl BitBoard {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{bitboard};
+    /// # use chess_engine_core::*;
     /// let bitboard = bitboard! {
     ///     . . . . . . . .
     ///     . . . . . . . .
@@ -347,7 +347,7 @@ impl BitBoard {
     /// # Examples
     ///
     /// /// ```
-    /// # use chess_engine::{bitboard};
+    /// # use chess_engine_core::*;
     /// let bitboard = bitboard! {
     ///     . . . . . . . .
     ///     . . . . . . . .
@@ -388,7 +388,7 @@ impl BitBoard {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BitBoard, Square, bitboard};
+    /// # use chess_engine_core::*;
     /// let bitboard = bitboard! {
     ///     . . . . . . . .
     ///     . . . . . . . .
@@ -527,7 +527,7 @@ impl PartialOrd<u64> for BitBoard {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::BitBoard;
+/// # use chess_engine_core::*;
 /// let bitboard = BitBoard(0x000000000000FF00);
 /// let result = !bitboard;
 /// assert_eq!(result, BitBoard(0xFFFFFFFFFFFF00FF));
@@ -544,7 +544,7 @@ impl Not for BitBoard {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{BitBoard, Square, bitboard};
+/// # use chess_engine_core::*;
 /// let bitboard: BitBoard = Square::C2.into();
 /// assert_eq!(bitboard, bitboard! {
 ///     . . . . . . . .
@@ -568,7 +568,7 @@ impl From<Square> for BitBoard {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{BitBoard, File, bitboard};
+/// # use chess_engine_core::*;
 /// let bitboard: BitBoard = File::C.into();
 /// assert_eq!(bitboard, bitboard! {
 ///     . . X . . . . .
@@ -592,7 +592,7 @@ impl From<File> for BitBoard {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{BitBoard, Rank, bitboard};
+/// # use chess_engine_core::*;
 /// let bitboard: BitBoard = Rank::Three.into();
 /// assert_eq!(bitboard, bitboard! {
 ///     . . . . . . . .
@@ -618,7 +618,7 @@ impl From<Rank> for BitBoard {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::BitBoard;
+/// # use chess_engine_core::*;
 /// let bitboard = BitBoard(0x000000000000FF00);
 /// println!("{}", bitboard);
 /// ```
@@ -640,7 +640,7 @@ impl fmt::Display for BitBoard {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::BitBoard;
+/// # use chess_engine_core::*;
 /// let bitboard = BitBoard(0x000000000000FF00);
 /// println!("{:?}", bitboard);
 /// ```
@@ -692,7 +692,7 @@ impl Debug for BitBoard {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{bitboard, Square, File, Rank};
+/// # use chess_engine_core::*;
 /// let bitboard = bitboard!{
 ///     . . . . . . . .
 ///     . . . . . . . .
@@ -731,7 +731,7 @@ impl Iterator for BitBoardIter {
 /// # Examples
 ///
 /// ```no_run
-/// # use chess_engine::{bitboard, Square};
+/// # use chess_engine_core::*;
 /// let bitboard = bitboard!{
 ///     . . . . . . . .
 ///     . . . . . . . .

@@ -8,7 +8,7 @@ use std::{fmt, str::FromStr};
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{Piece, PieceType, Color};
+/// # use chess_engine_core::*;
 /// let piece = Piece::new(PieceType::Pawn, Color::White);
 /// assert_eq!(piece.piece_type(), PieceType::Pawn);
 /// assert_eq!(piece.color(), Color::White);
@@ -31,7 +31,7 @@ impl Piece {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Piece, PieceType, Color};
+    /// # use chess_engine_core::*;
     /// let piece = Piece::new(PieceType::Pawn, Color::White);
     /// assert_eq!(piece.piece_type(), PieceType::Pawn);
     /// assert_eq!(piece.color(), Color::White);
@@ -45,7 +45,7 @@ impl Piece {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Piece, PieceType, Color};
+    /// # use chess_engine_core::*;
     /// let piece = Piece::new(PieceType::Pawn, Color::White);
     /// assert_eq!(piece.piece_type(), PieceType::Pawn);
     /// ```
@@ -58,7 +58,7 @@ impl Piece {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Piece, PieceType, Color};
+    /// # use chess_engine_core::*;
     /// let piece = Piece::new(PieceType::Pawn, Color::White);
     /// assert_eq!(piece.color(), Color::White);
     /// ```
@@ -76,7 +76,7 @@ impl Piece {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{Piece, PieceType, Color};
+/// # use chess_engine_core::*;
 /// let piece: Piece = "P".parse().unwrap();
 /// assert_eq!(piece, Piece::new(PieceType::Pawn, Color::White));
 /// ```
@@ -100,7 +100,7 @@ impl FromStr for Piece {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{Piece, PieceType, Color};
+/// # use chess_engine_core::*;
 /// let piece = Piece::new(PieceType::Pawn, Color::Black);
 /// assert_eq!(piece.to_string(), "p");
 /// ```

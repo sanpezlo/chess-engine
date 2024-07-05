@@ -60,7 +60,7 @@ macro_rules! enum_str {
         #[error(
             "invalid {} (expected {}, got {0})",
             stringify!($name),
-            $crate::core::macros::expected!($($str),*)
+            $crate::macros::expected!($($str),*)
         )]
         pub struct $error(pub String);
 
@@ -94,7 +94,7 @@ macro_rules! enum_str {
 
 macro_rules! expected {
     ($str:expr, $($strs:expr),*) => {
-        concat!($str, "-", $crate::core::macros::tail!($($strs),*))
+        concat!($str, "-", $crate::macros::tail!($($strs),*))
     };
     ($str:expr) => {
         $str
@@ -103,7 +103,7 @@ macro_rules! expected {
 
 macro_rules! tail {
     ($head:expr, $($tail:expr),*) => {
-        $crate::core::macros::tail!($($tail),*)
+        $crate::macros::tail!($($tail),*)
     };
     ($tail:expr) => {
         $tail

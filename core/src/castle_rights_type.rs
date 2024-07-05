@@ -1,4 +1,4 @@
-use crate::core::macros::{create_enum, enum_str};
+use crate::macros::{create_enum, enum_str};
 
 create_enum! {
     /// A `CastleRightsType` in chess.
@@ -34,7 +34,7 @@ impl CastleRightsType {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::CastleRightsType;
+    /// # use chess_engine_core::*;
     /// let mut castle_rights_type = CastleRightsType::None;
     /// castle_rights_type.try_bitor_assign(CastleRightsType::KingSide).unwrap();
     /// assert_eq!(castle_rights_type, CastleRightsType::KingSide);

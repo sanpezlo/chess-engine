@@ -44,7 +44,7 @@ impl Rank {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BitBoard, Rank, bitboard};
+    /// # use chess_engine_core::*;
     /// let bitboard = Rank::Three.bitboard();
     /// assert_eq!(bitboard, bitboard! {
     ///     . . . . . . . .

@@ -1,7 +1,6 @@
+use chess_engine_core::{CastleRightsType, Color, File, Piece, PieceType, Rank, Square};
 use once_cell::sync::Lazy;
 use rand::prelude::*;
-
-use crate::{CastleRightsType, Color, File, Piece, PieceType, Rank, Square};
 
 /// A lazy const [`Zobrist`] instance.
 pub const ZOBRIST: Lazy<Zobrist> = Lazy::new(|| Zobrist::new());
@@ -11,7 +10,7 @@ pub const ZOBRIST: Lazy<Zobrist> = Lazy::new(|| Zobrist::new());
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::ZOBRIST;
+/// # use chess_engine_movegen::*;
 /// println!("{:?}", *ZOBRIST);
 /// ```
 #[derive(Debug, Clone, Copy)]
@@ -28,7 +27,7 @@ impl Zobrist {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::Zobrist;
+    /// # use chess_engine_movegen::*;
     /// let zobrist = Zobrist::new();
     /// ```
     pub fn new() -> Self {
@@ -65,7 +64,7 @@ impl Zobrist {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::ZOBRIST;
+    /// # use chess_engine_movegen::*;
     /// let color = ZOBRIST.color();
     /// ```
     pub fn color(&self) -> u64 {
@@ -77,7 +76,7 @@ impl Zobrist {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{ZOBRIST, Square, Piece, Color, PieceType};
+    /// # use chess_engine_movegen::*;
     /// let square: Square = "a2".parse().unwrap();
     /// let piece = Piece::new(PieceType::Pawn, Color::White);
     /// let hash = ZOBRIST.piece(square, piece);
@@ -91,7 +90,7 @@ impl Zobrist {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{ZOBRIST, Square};
+    /// # use chess_engine_movegen::*;
     /// let square: Square = "a3".parse().unwrap();
     /// let hash = ZOBRIST.en_passant(square);
     /// ```
@@ -107,7 +106,7 @@ impl Zobrist {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{ZOBRIST, Color, CastleRightsType};
+    /// # use chess_engine_movegen::*;
     /// let hash = ZOBRIST.castling_rights(Color::White, CastleRightsType::Both);
     /// ```
     pub fn castling_rights(&self, color: Color, castle_rights_type: CastleRightsType) -> u64 {
@@ -122,7 +121,7 @@ impl Zobrist {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::Zobrist;
+/// # use chess_engine_movegen::*;
 /// let zobrist = Zobrist::default();
 /// assert_eq!(zobrist.color(), 0);
 /// ```

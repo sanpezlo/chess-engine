@@ -21,7 +21,7 @@ pub enum SquareError {
 
 macro_rules! create_square {
     ($($square:ident),*) => {
-        crate::core::macros::create_enum! {
+        crate::macros::create_enum! {
             #[doc = concat!(
                 "A `Square` on a chessboard.\n",
                 "\n",
@@ -56,7 +56,7 @@ impl Square {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{BitBoard, Square, bitboard};
+    /// # use chess_engine_core::*;
     /// let bitboard = Square::C2.bitboard();
     /// assert_eq!(bitboard, bitboard! {
     ///     . . . . . . . .
@@ -78,7 +78,7 @@ impl Square {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Square, File, Rank};
+    /// # use chess_engine_core::*;
     /// let square = Square::with_file_rank(File::F, Rank::Four);
     /// assert_eq!(square, Square::F4);
     /// ```
@@ -91,7 +91,7 @@ impl Square {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Square, File, Rank};
+    /// # use chess_engine_core::*;
     /// assert_eq!(Square::G5.file(), File::G);
     /// ```
     pub const fn file(self) -> File {
@@ -103,7 +103,7 @@ impl Square {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Square, File, Rank};
+    /// # use chess_engine_core::*;
     /// assert_eq!(Square::G5.rank(), Rank::Five);
     /// ```
     pub const fn rank(self) -> Rank {
@@ -115,7 +115,7 @@ impl Square {
     /// # Examples
     ///
     /// ```
-    /// # use chess_engine::{Square, File, Rank, Color};
+    /// # use chess_engine_core::*;
     /// assert_eq!(Square::A1.color(), Color::Black);
     /// ```
     pub const fn color(self) -> Color {
@@ -140,7 +140,7 @@ impl Square {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::Square;
+/// # use chess_engine_core::*;
 /// assert_eq!(Square::default(), Square::A1);
 /// ```
 impl Default for Square {
@@ -158,7 +158,7 @@ impl Default for Square {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{Square, File, Rank};
+/// # use chess_engine_core::*;
 /// assert_eq!(
 ///    "h7".parse::<Square>().unwrap(),
 ///    Square::H7
@@ -187,7 +187,7 @@ impl FromStr for Square {
 /// # Examples
 ///
 /// ```
-/// # use chess_engine::{Square, File, Rank};
+/// # use chess_engine_core::*;
 /// assert_eq!(
 ///    Square::F2.to_string(),
 ///   "f2"
