@@ -507,11 +507,8 @@ fn magic_number(square: Square, sliding_piece: SlidingPiece) -> u64 {
         index += 1;
     }
 
-    let mut seed = 1804289383;
-
     loop {
-        let (magic_number, new_seed) = random_magic_number(seed);
-        seed = new_seed;
+        let magic_number = random_magic_number();
 
         if (relevant_occupancy.0.wrapping_mul(magic_number) & 0xFF00000000000000).count_ones() < 6 {
             continue;
