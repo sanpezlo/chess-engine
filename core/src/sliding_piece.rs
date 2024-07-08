@@ -7,16 +7,13 @@ create_enum! {
         /// A Bishop.
         Bishop,
         /// A Rook.
-        Rook,
-        /// A Queen.
-        Queen
+        Rook
     }
 }
 
 enum_str! {
     SlidingPiece, SlidingPieceError {
         Bishop = "b",
-        Rook = "r",
-        Queen = "q"
+        Rook = "r"
     }
 }

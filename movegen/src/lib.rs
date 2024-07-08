@@ -8,13 +8,13 @@ mod board_builder;
 mod castle_rights;
 mod draw;
 pub mod fen;
-mod movegen;
+mod magic;
 mod state;
 mod zobrist;
 
 pub use board::*;
 pub use board_builder::*;
 pub use castle_rights::*;
-pub use movegen::*;
+pub use magic::*;
 pub use state::*;
 pub use zobrist::*;
