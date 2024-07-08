@@ -54,11 +54,7 @@ pub const fn mask_pawn_attacks(color: Color, square: Square) -> BitBoard {
 pub fn write(f: &mut std::fs::File) {
     use std::io::Write;
 
-    write!(
-        f,
-        "/// precomputed pawn attacks for all squares\n"
-    )
-    .unwrap();
+    write!(f, "/// Precomputed pawn attacks for all squares\n").unwrap();
 
     write!(
         f,

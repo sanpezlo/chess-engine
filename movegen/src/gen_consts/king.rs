@@ -41,11 +41,7 @@ pub const fn mask_king_attacks(square: Square) -> BitBoard {
 pub fn write(f: &mut std::fs::File) {
     use std::io::Write;
 
-    write!(
-        f,
-        "/// precomputed king attacks for all squares\n"
-    )
-    .unwrap();
+    write!(f, "/// Precomputed king attacks for all squares\n").unwrap();
 
     write!(
         f,

@@ -129,11 +129,7 @@ pub fn write(f: &mut std::fs::File, magic_numbers: &[u64; Square::LEN]) {
 
     // relevant bishop blockers
 
-    write!(
-        f,
-        "/// relevant bishop blockers for all squares\n"
-    )
-    .unwrap();
+    write!(f, "/// Relevant bishop blockers for all squares\n").unwrap();
 
     write!(
         f,
@@ -153,11 +149,7 @@ pub fn write(f: &mut std::fs::File, magic_numbers: &[u64; Square::LEN]) {
 
     write!(f, "];\n").unwrap();
 
-    write!(
-        f,
-        "/// relevant bishop blockers count for all squares\n"
-    )
-    .unwrap();
+    write!(f, "/// Relevant bishop blockers count for all squares\n").unwrap();
 
     write!(
         f,
@@ -196,7 +188,7 @@ pub fn write(f: &mut std::fs::File, magic_numbers: &[u64; Square::LEN]) {
 
     write!(
         f,
-        "/// precomputed bishop attacks for all squares and blockers\n"
+        "/// Precomputed bishop attacks for all squares and blockers\n"
     )
     .unwrap();
 

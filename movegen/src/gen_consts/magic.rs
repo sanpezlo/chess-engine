@@ -66,6 +66,7 @@ pub const fn mask_blockers(pattern: u64, blockers: BitBoard) -> BitBoard {
     mask
 }
 
+/// Finds the magic number for a given square and sliding piece.
 fn magic_number(square: Square, sliding_piece: SlidingPiece) -> u64 {
     let relevant_bits: u8 = match sliding_piece {
         SlidingPiece::Bishop => mask_relevant_bishop_blockers(square).0.count_ones() as u8,
@@ -132,11 +133,7 @@ pub fn write(f: &mut std::fs::File) {
 
     let mut magic_numbers = [[0u64; Square::LEN]; SlidingPiece::LEN];
 
-    write!(
-        f,
-        "/// magic numbers for all squares and sliding pieces\n"
-    )
-    .unwrap();
+    write!(f, "/// Magic numbers for all squares and sliding pieces\n").unwrap();
 
     write!(
         f,

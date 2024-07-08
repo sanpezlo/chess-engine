@@ -149,11 +149,7 @@ pub fn write(f: &mut std::fs::File, magic_numbers: &[u64; Square::LEN]) {
 
     // relevant rook blockers
 
-    write!(
-        f,
-        "/// relevant rook blockers for all squares\n"
-    )
-    .unwrap();
+    write!(f, "/// Relevant rook blockers for all squares\n").unwrap();
 
     write!(
         f,
@@ -173,11 +169,7 @@ pub fn write(f: &mut std::fs::File, magic_numbers: &[u64; Square::LEN]) {
 
     write!(f, "];\n").unwrap();
 
-    write!(
-        f,
-        "/// relevant bishop blockers count for all squares\n"
-    )
-    .unwrap();
+    write!(f, "/// Relevant bishop blockers count for all squares\n").unwrap();
 
     write!(
         f,
@@ -203,10 +195,8 @@ pub fn write(f: &mut std::fs::File, magic_numbers: &[u64; Square::LEN]) {
 
     for square in Square::ALL {
         for blockers_pattern in 0..max_blockers {
-            let blockers = mask_blockers(
-                blockers_pattern as u64,
-                mask_relevant_rook_blockers(square),
-            );
+            let blockers =
+                mask_blockers(blockers_pattern as u64, mask_relevant_rook_blockers(square));
 
             let magic_index = (blockers.0.wrapping_mul(magic_numbers[square as usize]))
                 >> (64 - blockers_count[square as usize]);
@@ -215,11 +205,7 @@ pub fn write(f: &mut std::fs::File, magic_numbers: &[u64; Square::LEN]) {
         }
     }
 
-    write!(
-        f,
-        "/// precomputed rook attacks for all squares\n"
-    )
-    .unwrap();
+    write!(f, "/// Precomputed rook attacks for all squares\n").unwrap();
 
     write!(
         f,
