@@ -12,3 +12,10 @@ chess-engine-core = { path = "../core" }
 
 [build-dependencies]
 chess-engine-core = { path = "../core" }
+
+[profile.dev.build-override]
+opt-level = 3
+[profile.release.build-override]
+opt-level = 3
+[profile.test.build-override]
+opt-level = 3
