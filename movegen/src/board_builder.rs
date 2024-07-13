@@ -158,6 +158,7 @@ impl BoardBuilder {
     /// builder.color("b".parse().unwrap());
     /// builder.castling_rights(CastleRights::default());
     /// let board = builder.build();
+    /// ```
     pub fn build(self) -> Board {
         let mut board = Board {
             piece_types_bitboards: Default::default(),

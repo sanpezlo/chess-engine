@@ -408,6 +408,28 @@ impl BitBoard {
 
         Some(Square::new(self.0.trailing_zeros() as usize))
     }
+
+    /// Returns the number of set bits in a `BitBoard`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine_core::*;
+    /// let bitboard = bitboard! {
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    ///     . . X X X X . .
+    ///     . . . . X . . .
+    ///     . . . X . . . .
+    ///     . . X . . . . .
+    ///     . . . . . . . .
+    ///     . . . . . . . .
+    /// };
+    /// assert_eq!(bitboard.len(), 7);
+    /// ```
+    pub const fn len(self) -> usize {
+        self.0.count_ones() as usize
+    }
 }
 
 macro_rules! impl_ops {
@@ -681,7 +703,7 @@ impl Debug for BitBoard {
 
         s.push_str("\n    a b c d e f g h\n\n");
 
-        s.push_str(&format!("   {:016X}\n", self.0));
+        s.push_str(&format!("   {:016X}", self.0));
 
         write!(f, "{}", s)
     }

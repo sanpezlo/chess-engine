@@ -9,6 +9,7 @@ mod castle_rights;
 mod draw;
 pub mod fen;
 mod magic;
+mod movegen;
 mod state;
 mod zobrist;
 

@@ -49,9 +49,9 @@ impl FromStr for CastleRights {
             let castle_rights_type = CastleRightsType::from_str(&lowercase.to_string())?;
 
             if lowercase == c {
-                castle_rights[Color::White as usize].try_bitor_assign(castle_rights_type)?;
-            } else {
                 castle_rights[Color::Black as usize].try_bitor_assign(castle_rights_type)?;
+            } else {
+                castle_rights[Color::White as usize].try_bitor_assign(castle_rights_type)?;
             }
         }
 

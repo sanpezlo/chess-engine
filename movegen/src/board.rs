@@ -1,4 +1,6 @@
-use chess_engine_core::{BitBoard, CastleRightsType, Color, Piece, PieceType, Square};
+use std::fmt;
+
+use chess_engine_core::{BitBoard, CastleRightsType, Color, File, Piece, PieceType, Rank, Square};
 
 use crate::{BoardBuilder, CastleRights, State, ZOBRIST};
 
@@ -13,7 +15,7 @@ use crate::{BoardBuilder, CastleRights, State, ZOBRIST};
 /// # use chess_engine_movegen::*;
 /// let board = Board::builder().build();
 /// ```
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct Board {
     pub(crate) piece_types_bitboards: [BitBoard; PieceType::LEN],
     pub(crate) color_bitboards: [BitBoard; Color::LEN],
@@ -191,6 +193,27 @@ impl Board {
         self.color_bitboards[color] = self.color_bitboards[color].set_square(square);
     }
 
+    /// Retruns a [`Piece`] from a [`Square`] on the board.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # use chess_engine_movegen::*;
+    /// # use chess_engine_core::*;
+    /// let board = Board::default();
+    /// let piece = board.get_piece("a1".parse().unwrap());
+    /// assert_eq!(piece, Some(Piece::new(PieceType::Rook, Color::White)));
+    /// ```
+    pub fn get_piece(&self, square: Square) -> Option<Piece> {
+        for piece in Piece::ALL {
+            if self.piece_bitboard(piece).is_get_square(square) {
+                return Some(piece);
+            }
+        }
+
+        None
+    }
+
     /// Returns the hash of the board.
     ///
     /// # Examples
@@ -215,6 +238,21 @@ impl Board {
         }
 
         hash
+    }
+
+    /// Returns a [`BitBoard`] with all the pieces of the ally.
+    pub fn ally_bitboard(&self) -> BitBoard {
+        self.color_bitboards[self.color() as usize]
+    }
+
+    /// Returns a [`BitBoard`] with all the pieces of the opponent.
+    pub fn opponent_bitboard(&self) -> BitBoard {
+        self.color_bitboards[!self.color() as usize]
+    }
+
+    /// Returns a [`BitBoard`] with all the pieces of both colors.
+    pub fn both_bitboard(&self) -> BitBoard {
+        self.color_bitboards[Color::White as usize] | self.color_bitboards[Color::Black as usize]
     }
 }
 
@@ -251,5 +289,53 @@ impl Default for Board {
             ),
             history: Vec::with_capacity(Self::AVERAGE_MOVES),
         }
+    }
+}
+
+impl fmt::Display for Board {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut pieces = [None; Square::LEN];
+
+        for square in Square::ALL {
+            pieces[square as usize] = self.get_piece(square);
+        }
+
+        let board_builder = BoardBuilder {
+            pieces: pieces,
+            state: self.state,
+        };
+
+        write!(f, "{}", board_builder.to_string())
+    }
+}
+
+impl fmt::Debug for Board {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let mut s = String::from("\n");
+
+        for rank in Rank::ALL.into_iter().rev() {
+            s.push_str(&format!("  {} ", rank));
+
+            'file: for file in File::ALL {
+                let square = Square::with_file_rank(file, rank);
+
+                for piece in Piece::ALL {
+                    if self.piece_bitboard(piece).is_get_square(square) {
+                        s.push_str(&format!("{:?} ", piece));
+                        continue 'file;
+                    }
+                }
+
+                s.push_str(". ");
+            }
+
+            s.push_str("\n");
+        }
+
+        s.push_str("\n    a b c d e f g h\n\n");
+
+        s.push_str(&format!("{}", self.to_string()));
+
+        write!(f, "{}", s)
     }
 }

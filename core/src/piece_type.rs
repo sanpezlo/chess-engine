@@ -1,8 +1,10 @@
+use core::fmt;
+
 use super::macros::{create_enum, enum_str};
 
 create_enum! {
     /// A `PieceType` in chess.
-    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+    #[derive(Clone, Copy, PartialEq, Eq)]
     pub enum PieceType {
         /// A Pawn.
         Pawn,
@@ -27,5 +29,20 @@ enum_str! {
         Rook = "r",
         Queen = "q",
         King = "k"
+    }
+}
+
+impl fmt::Debug for PieceType {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        let piece = match self {
+            PieceType::King => '♔',
+            PieceType::Queen => '♕',
+            PieceType::Rook => '♖',
+            PieceType::Bishop => '♗',
+            PieceType::Knight => '♘',
+            PieceType::Pawn => '♙',
+        };
+
+        write!(f, "{}", piece)
     }
 }

@@ -31,3 +31,14 @@ impl Default for Color {
         Color::White
     }
 }
+
+impl std::ops::Not for Color {
+    type Output = Color;
+
+    fn not(self) -> Self::Output {
+        match self {
+            Color::White => Color::Black,
+            Color::Black => Color::White,
+        }
+    }
+}
